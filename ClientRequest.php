@@ -1,7 +1,7 @@
 <?php
 
 require __DIR__ . '/vendor/autoload.php';
-
+namespace ipaysecure
 
 class ClientRequest{
 	private $reference_Code;
@@ -18,6 +18,7 @@ class ClientRequest{
 
     function __construct()
       {
+      	// Test credentials
     	$this->order_id = 'A12356789';
 		$this->firstName = 'John';
 		$this->lastName = 'Doe';
@@ -81,22 +82,4 @@ class ClientRequest{
         }
 	}
 }
-$req = new ClientRequest();
-     	$sample = '{
-     		"order_id":"A12345678",
-          	"first_Name":"John",
-          	"last_Name":"Doe",
-			"street":"Sifa Towers, Ring Rd",
-          	"city":"Nairobi",
-          	"email":"abc@test.com",
-          	"account_Number":"4111111111111111",
-          	"expiration_Month":12,
-          	"expiration_Year":2019,
-	        "currency":"KES",
-          	"amount": 30000
-	 
-     	}';
-     	$cardDetails = json_decode($sample);
-
-		$req->makeRequest($cardDetails);
 ?>
