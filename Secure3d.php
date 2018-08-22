@@ -1,16 +1,22 @@
+<?php
+	namespace IpaySecure;
+	use JWTUtil;
+?>
 <html>
 <head>
 
 </head>
 <body>
 <?php
+
+
 /**
   * thin client architecture: https://cardinaldocs.atlassian.net/wiki/spaces/CCen/pages/56229960/Getting+Started
 **/
 /* Test Data*/
 	//use IpaySecure\Secure3d\ClientRequest;
 	require_once ('classes/ClientRequest.php');
-	require_once ('classes/JWTUtil.php');
+	//require_once ('classes/JWTUtil.php');
 	$_SESSION['transactionId'] = uniqid();
 
 	$_SESSION['order'] = array(

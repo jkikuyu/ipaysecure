@@ -1,5 +1,5 @@
 <?php
-//namespace IpaySecure\Secure3d\ClientRequest;
+namespace IpaySecure;
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 

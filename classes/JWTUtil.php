@@ -1,10 +1,11 @@
 <?php
-    //namespace ipaysecure
+    namespace IpaySecure;
 
     use Lcobucci\JWT\Builder;
     use Lcobucci\JWT\Signer\Hmac\Sha256;
     use Firebase\JWT\JWT;
-    $dotenv = new Dotenv\Dotenv(__DIR__ . '/../');
+    use Dotenv\Dotenv;
+    $dotenv = new Dotenv(__DIR__.'/../');
     $dotenv->load();
 
 
