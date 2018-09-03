@@ -36,13 +36,14 @@
         function generateJwt($orderTransactionId, $orderObj){
             $currentTime = time();
             $expireTime = 3600; // expiration in seconds - this equals 1hr
-            $token = (new Builder())->setIssuer($this->api_Key) // API Key Identifier (iss claim)
-                        ->setId($orderTransactionId, true) // The Transaction Id (jti claim)
+            $token = (new Builder())->setId($orderTransactionId, true) // The Transaction Id (jti claim)
                         ->setIssuedAt($currentTime) // Configures the time that the token was issued (iat claim)
                         ->setExpiration($currentTime + $expireTime) // Configures the expiration time of the token (exp claim)
+                        ->setIssuer($this->api_Id) // API Key Identifier (iss claim)
+                        //->set('Payload', $orderObj) // Configures a new claim, called "Payload", containing the OrderDetails
+
                         ->set('OrgUnitId',   $this->orgUnit_Id) // Configures a new claim, called "OrgUnitId"
-                        ->set('Payload', $orderObj) // Configures a new claim, called "Payload", containing the OrderDetails
-                        ->set('ObjectifyPayload', true)
+                       // ->set('ObjectifyPayload', true)
                         ->sign(new Sha256(),  $this->api_Key) // Sign with API Key
                         ->getToken(); // Retrieves the generated token
          
@@ -51,13 +52,18 @@
 
         function validateJwt($jwt) {
             // This will validate JWT Requests or Responses from Cardinal.
+            $retval =false;
             try{
                 // Validate the JWT by virtue of successful decoding
                 $decoded = JWT::decode($jwt,$this->api_Key, array('HS256'));
+                print_r($decoded);
+                //echo json_encode($decoded);
+                $retval = true;
             } catch (Exception $e) {
                 echo "Exception in validateJwt: ", $e->getMessage(), "\n";
+
             }
-            return false;    
+            return $retval;    
         }
 }
 ?>

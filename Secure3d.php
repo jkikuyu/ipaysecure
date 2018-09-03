@@ -15,21 +15,21 @@
 
 	$_SESSION['order'] = array(
 	    "OrderDetails" => array(
-	        "OrderNumber" =>  'ORDER-' . strval(mt_rand(1000, 10000)),
+	        "OrderNumber" =>  '1234567890',
 	        "Amount" => '1500',
-	        "CurrencyCode" => '840'
+	        "CurrencyCode" => '404'
 	        )
 	);
 	$req = new ClientRequest();
 
      	$sample = '{
-     		"order_id":"A12345678",
+     		"order_id":"1234567890",
           	"first_Name":"John",
           	"last_Name":"Doe",
 			"street":"Sifa Towers, Ring Rd",
           	"city":"Nairobi",
           	"email":"abc@test.com",
-          	"account_Number":"4111111111111111",
+          	"account_Number":"4000000000000002",
           	"expiration_Month":12,
           	"expiration_Year":2019,
 	        "currency":"KES",
@@ -43,6 +43,8 @@
 
 		$jwtUtil = new JWTUtil();
 		$jwt = $jwtUtil->generateJwt($_SESSION['transactionId'], $_SESSION['order']);
+		echo $jwt;
+		$success = $jwtUtil->validateJwt($jwt);
 ?>
 <!--https://cardinaldocs.atlassian.net/wiki/spaces/CC/pages/557065/Songbird.js#Songbird.js-Events -->
 <!--Production URL: https://songbirdstag.cardinalcommerce.com/edge/v1/songbird.js -->
@@ -50,31 +52,109 @@
 
 <!--Sandbox URL: https://utilsbox.cardinalcommerce.com/cardinalcruise/v1/songbird.js -->
 
-	<script src="https://utilsbox.cardinalcommerce.com/cardinalcruise/v1/songbird.js"></script>
-	<script src="https://code.jquery.com/jquery-3.3.0.js"></script>
+	<script src="https://includestest.ccdc02.com/cardinalcruise/v1/songbird.js"></script>
+ 	<script src="https://code.jquery.com/jquery-3.3.0.js"></script>
 	<script>
 		//https://developer.cardinalcommerce.com/cardinal-cruise-activation.shtml#validatingResponseJWT
 		$(document).ready(function(){
 			  initCCA();
 		});
+		Cardinal.start("cca", { 
+		  OrderDetails: {
+		    OrderNumber: "1234567890",
+		    Amount:"1500",
+		    CurrencyCode: "404",
+		    OrderDescription:"test description",
+		    OrderChannel:"M"
+
+		},
+		Consumer: {
+		    Email1: "joe@abc.com",
+		    ShippingAddress:{
+		    	FirstName:"John",
+		    	MiddleName:"C",
+		    	LastName:"Doe",
+		    	Address1:"sdfdfdfddfddf",
+		    	City:"Nairobi",
+		    	Phone1:"3234455"
+		    },
+			Account:{
+		    AccountNumber: "123456789",
+		    ExpirationMonth: "12",
+		    ExpirationYear: "2019",
+		    NameOnAccount:"John Doe",
+		    CardCode:"366"
+			}
+		}
+	
+		});
+/*
 		Cardinal.start("cca", {
 		  OrderDetails: {
 		    OrderNumber: "1234567890",
-		    Amount:"1000",
-		    CurrencyCode: "KES"
+		    Amount:"1500",
+		    CurrencyCode: "404",
+		    OrderDescription:"test description",
+		    OrderChannel:"M"
 
-		  },
-		  Consumer: {
-		    Account: {
-		    AccountNumber: "4111111111111111",
-		    ExpirationMonth: "01",
-		    ExpirationYear: "2099"
-		  }
+		},
+		Consumer: {
+		    Email1: "joe@abc.com",
+		    ShippingAddress:{
+		    	FirstName:"John",
+		    	MiddleName:"C",
+		    	LastName:"Doe",
+		    	Address1:"sdfdfdfddfddf",
+		    	City:"Nairobi",
+		    	Phone1:"3234455"
+		    },
+		    BillingAddress:{
+				FirstName:"John",
+		    	MiddleName:"C",
+		    	LastName:"Doe",
+		    	Address1:"sdfdfdfddfddf",
+		    	City:"Nairobi",
+		    	Phone1:"3234455"
+			},
+			Account:{
+		    AccountNumber: "123456789",
+		    ExpirationMonth: "12",
+		    ExpirationYear: "2019",
+		    NameOnAccount:"John Doe",
+		    CardCode:"366"
+			}
+		},
+		Cart:{
+		  	Name:"Ptryc",
+		  	SKU:"212334",	
+			Quantity:"1",	
+			DescriptioN:"sweet"
+		},
+		Options:{
+			EnableCCA:"true"
+
 		}
-		});
+*/	
 
-		
-		Cardinal.on("payments.validated", function (data, jwt) {
+
+		function initCCA(){
+			// configuration of Cardinal Cruise
+			Cardinal.configure({
+			    logging: {
+			        level: "on",
+			        debug: "verbose"
+			    }
+			});
+			// get jwt container
+				Cardinal.setup("init", {
+			    jwt: document.getElementById("JWTContainer").value
+			});
+
+			//Listen for Events
+		    Cardinal.on('payments.setupComplete', function(setupCompleteData){
+		    	console.log(JSON.stringify(setupCompleteData));
+			});	
+			Cardinal.on("payments.validated", function (data, jwt) {
 		    switch(data.ActionCode){
 		      case "SUCCESS":
 		      // Handle successful transaction, send JWT to backend to verify
@@ -94,32 +174,14 @@
 		      break;
 		     
 		      case "ERROR":
-		      	 alert('ERROR');
+		      	 alert('ERROR:' +data.ErrorDescription);
 
 		      // Handle service level error
 		      break;
 		  }
 		});
 		
-
-		function initCCA(){
-			// configuration of Cardinal Cruise
-			Cardinal.configure({
-			    logging: {
-			        level: "on"
-			    }
-			});
-			// get jwt container
-			Cardinal.setup("init", {
-			    jwt: document.getElementById("JWTContainer").value
-			});
-
-			//Listen for Events
-/*		    Cardinal.on('payments.setupComplete', function(setupCompleteData){
-		    	alert('here');
-		    	//alert(JSON.stringify(setupCompleteData));
-			});	
-*/	
+	
 		}
 	</script>
 <input type="hidden" id="JWTContainer" value= "<?php echo $jwt;?>" />
