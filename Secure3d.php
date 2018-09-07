@@ -112,14 +112,7 @@
 		},
 		Consumer: {
 		    Email1: "joe@abc.com",
-		    ShippingAddress:{
-		    	FirstName:"John",
-		    	MiddleName:"C",
-		    	LastName:"Doe",
-		    	Address1:"sdfdfdfddfddf",
-		    	City:"Nairobi",
-		    	Phone1:"3234455"
-		    },
+
 			Account:{
 		    AccountNumber: "4000000000000002",
 		    ExpirationMonth: "12",
