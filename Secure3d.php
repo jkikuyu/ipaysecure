@@ -1,6 +1,6 @@
 <?php
 	namespace IpaySecure;
-	use JWTUtil;
+	use IpaySecure\JWTUtil;
 ?>
 <html>
 <head>
@@ -8,15 +8,13 @@
 </head>
 <body>
 <?php
-
-
 /**
   * thin client architecture: https://cardinaldocs.atlassian.net/wiki/spaces/CCen/pages/56229960/Getting+Started
 **/
 /* Test Data*/
 	//use IpaySecure\Secure3d\ClientRequest;
 	require_once ('classes/ClientRequest.php');
-	//require_once ('classes/JWTUtil.php');
+	require_once ('classes/JWTUtil.php');
 	$_SESSION['transactionId'] = uniqid();
 
 	$_SESSION['order'] = array(
@@ -49,8 +47,7 @@
 
 		$jwtUtil = new JWTUtil();
 		$jwt = $jwtUtil->generateJwt($_SESSION['transactionId'], $_SESSION['order']);
-		echo $jwt;
-		$success = $jwtUtil->validateJwt($jwt);
+		//$success = $jwtUtil->validateJwt($jwt);
 ?>
 <!--https://cardinaldocs.atlassian.net/wiki/spaces/CC/pages/557065/Songbird.js#Songbird.js-Events -->
 <!--Production URL: https://songbirdstag.cardinalcommerce.com/edge/v1/songbird.js -->
@@ -59,12 +56,51 @@
 <!--Sandbox URL: https://utilsbox.cardinalcommerce.com/cardinalcruise/v1/songbird.js -->
 
 	<script src="https://includestest.ccdc02.com/cardinalcruise/v1/songbird.js"></script>
- 	<script src="https://code.jquery.com/jquery-3.3.0.js"></script>
+	<script src="https://code.jquery.com/jquery-3.3.0.js"></script>
 	<script>
 		//https://developer.cardinalcommerce.com/cardinal-cruise-activation.shtml#validatingResponseJWT
 		$(document).ready(function(){
 			  initCCA();
+		});		
+		
+		
+					//Listen for Events
+		    Cardinal.on('payments.setupComplete', function(setupCompleteData){
+		    	console.log(JSON.stringify(setupCompleteData));
+				alert ("Init done");
+				card_start();
+			});	
+			Cardinal.on("payments.validated", function (data, jwt) {
+				
+				console.log(JSON.stringify(data,null, 2));
+		    switch(data.ActionCode){
+		      case "SUCCESS":
+		      // Handle successful transaction, send JWT to backend to verify
+		      	alert('success');
+		      break;
+		     
+		      case "NOACTION":
+		      	alert('NOACTION');
+
+		      // Handle no actionable outcome
+		      break;
+		     
+		      case "FAILURE":
+		      	 alert('FAILURE');
+
+		      // Handle failed transaction attempt
+		      break;
+		     
+		      case "ERROR":
+		      	 alert('ERROR:' +data.ErrorDescription);
+
+		      // Handle service level error
+		      break;
+		  }
 		});
+		
+		function card_start(){
+			alert ("starting");
 		Cardinal.start("cca", { 
 		  OrderDetails: {
 		    OrderNumber: "1234567890",
@@ -85,7 +121,7 @@
 		    	Phone1:"3234455"
 		    },
 			Account:{
-		    AccountNumber: "123456789",
+		    AccountNumber: "4000000000000002",
 		    ExpirationMonth: "12",
 		    ExpirationYear: "2019",
 		    NameOnAccount:"John Doe",
@@ -94,8 +130,9 @@
 		}
 	
 		});
-/*
-		Cardinal.start("cca", {
+		}
+
+	/*		Cardinal.start("cca", {
 		  OrderDetails: {
 		    OrderNumber: "1234567890",
 		    Amount:"1500",
@@ -145,48 +182,18 @@
 
 		function initCCA(){
 			// configuration of Cardinal Cruise
-			Cardinal.configure({
-			    logging: {
-			        level: "on",
-			        debug: "verbose"
-			    }
-			});
+		//	Cardinal.configure({
+		//	    logging: {
+		//	        level: "on",
+		//	        debug: "verbose"
+		///	    }
+		//	});
 			// get jwt container
-				Cardinal.setup("init", {
+			console.log(JSON.stringify(document.getElementById("JWTContainer").value));
+			Cardinal.setup("init", {
 			    jwt: document.getElementById("JWTContainer").value
 			});
 
-			//Listen for Events
-		    Cardinal.on('payments.setupComplete', function(setupCompleteData){
-		    	console.log(JSON.stringify(setupCompleteData));
-			});	
-			Cardinal.on("payments.validated", function (data, jwt) {
-		    switch(data.ActionCode){
-		      case "SUCCESS":
-		      // Handle successful transaction, send JWT to backend to verify
-		      	alert('success');
-		      break;
-		     
-		      case "NOACTION":
-		      	alert('NOACTION');
-
-		      // Handle no actionable outcome
-		      break;
-		     
-		      case "FAILURE":
-		      	 alert('FAILURE');
-
-		      // Handle failed transaction attempt
-		      break;
-		     
-		      case "ERROR":
-		      	 alert('ERROR:' +data.ErrorDescription);
-
-		      // Handle service level error
-		      break;
-		  }
-		});
-		
 	
 		}
 	</script>
