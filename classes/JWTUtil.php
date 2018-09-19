@@ -1,4 +1,7 @@
 <?php
+    /**
+    ** @author :jude
+    **/
     namespace IpaySecure;
 
     use Lcobucci\JWT\Builder;

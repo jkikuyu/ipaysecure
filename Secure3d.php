@@ -1,6 +1,18 @@
 <?php
 	namespace IpaySecure;
 	use IpaySecure\JWTUtil;
+	use IpaySecure\Utils;
+	
+	require_once ('classes/ClientRequest.php');
+	require_once ('classes/JWTUtil.php');
+	
+	error_reporting(E_ALL);
+	ini_set('display_errors', 1);
+	session_start();
+	// log request
+	Utils::logger(array_merge(['request_time' => new DateTime(), 'request_type' => 'php://input'], ['request_data' => json_decode(file_get_contents('php://input'))]), $request_log_dir);	
+
+
 ?>
 <html>
 <head>
@@ -13,8 +25,14 @@
 **/
 /* Test Data*/
 	//use IpaySecure\Secure3d\ClientRequest;
-	require_once ('classes/ClientRequest.php');
-	require_once ('classes/JWTUtil.php');
+
+
+	$transaction = new Transaction();
+	$recd_data = json_decode(file_get_contents('php://input'));
+
+	$transaction->initInput($recd_data);
+
+
 	$_SESSION['transactionId'] = uniqid();
 
 	$_SESSION['order'] = array(
@@ -47,6 +65,9 @@
 
 		$jwtUtil = new JWTUtil();
 		$jwt = $jwtUtil->generateJwt($_SESSION['transactionId'], $_SESSION['order']);
+
+        session_unset();
+        session_destroy();
 		//$success = $jwtUtil->validateJwt($jwt);
 ?>
 <!--https://cardinaldocs.atlassian.net/wiki/spaces/CC/pages/557065/Songbird.js#Songbird.js-Events -->
@@ -67,6 +88,7 @@
 					//Listen for Events
 		    Cardinal.on('payments.setupComplete', function(setupCompleteData){
 		    	console.log(JSON.stringify(setupCompleteData));
+
 				alert ("Init done");
 				card_start();
 			});	
@@ -126,7 +148,9 @@
 		}
 
 	/*		Cardinal.start("cca", {
-		  OrderDetails: {
+		Email1: "joe@abc.com",
+
+		OrderDetails: {
 		    OrderNumber: "1234567890",
 		    Amount:"1500",
 		    CurrencyCode: "404",
@@ -156,20 +180,14 @@
 		    AccountNumber: "123456789",
 		    ExpirationMonth: "12",
 		    ExpirationYear: "2019",
-		    NameOnAccount:"John Doe",
-		    CardCode:"366"
 			}
 		},
-		Cart:{
-		  	Name:"Ptryc",
-		  	SKU:"212334",	
-			Quantity:"1",	
-			DescriptioN:"sweet"
-		},
-		Options:{
-			EnableCCA:"true"
+OrderDetails
 
-		}
+    OrderNumber
+    Amount
+    CurrencyCode
+    OrderChannel
 */	
 
 
@@ -191,6 +209,7 @@
 		}
 	</script>
 <input type="hidden" id="JWTContainer" value= "<?php echo $jwt;?>" />
+<input type="text" data-cardinal-field="AccountNumber" id="creditCardNumber" name="creditCardNumber" />
 
 </body>
 
