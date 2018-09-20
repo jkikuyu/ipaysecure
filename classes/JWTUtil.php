@@ -8,9 +8,9 @@
     use Lcobucci\JWT\Signer\Hmac\Sha256;
     use Firebase\JWT\JWT;
     use Dotenv\Dotenv;
-    $dotenv = new Dotenv(__DIR__.'/../');
-    $dotenv->load();
 
+        $dotenv = new Dotenv(__DIR__.'/../');
+        $dotenv->load();
 
     class JWTUtil {
 

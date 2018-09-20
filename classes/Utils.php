@@ -3,10 +3,10 @@
     ** @author:andrew
     **/
 namespace IpaySecure;
-use IpaySecure\Transaction;
 final class Utils{
-    public static function validatePhpInput(stdClass $raw_input, array $required_params){
+    public static function validatePhpInput($raw_input, array $required_params){
         $res_obj = null;
+        var_dump($raw_input);
         if($raw_input){
             foreach($required_params as $param){
                 if(!property_exists($raw_input, $param) || empty($raw_input->$param) || !(is_string($raw_input->$param) || is_int($raw_input->$param))){

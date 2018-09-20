@@ -1,6 +1,5 @@
 <?php
 namespace IpaySecure;
-require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 
 class ClientRequest{
@@ -31,7 +30,7 @@ class ClientRequest{
 		$this->currency = 'KES';
 		$this->amount = '290.00';
      }
-     public function makeRequest($cardDetails){
+     public function makeRequest($cardDetails, $cca){
      	$this->validCard($cardDetails);
 
 		$client = new CybsNameValuePairClient();

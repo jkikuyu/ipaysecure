@@ -1,16 +1,22 @@
 <?php
 	namespace IpaySecure;
 	use IpaySecure\JWTUtil;
-	use IpaySecure\Utils;
-	
+	use IpaySecure\ClientRequest;
+	use IpaySecure\Transaction;
+	//use IpaySecure\Utils;
+	require_once dirname(__DIR__) . '/ipaysecure/vendor/autoload.php';
+
 	require_once ('classes/ClientRequest.php');
 	require_once ('classes/JWTUtil.php');
-	
+	require_once ('classes/Utils.php');
+	require_once ('classes/Transaction.php');
+
 	error_reporting(E_ALL);
 	ini_set('display_errors', 1);
 	session_start();
 	// log request
-	Utils::logger(array_merge(['request_time' => new DateTime(), 'request_type' => 'php://input'], ['request_data' => json_decode(file_get_contents('php://input'))]), $request_log_dir);	
+	$request_log_dir = 'request_logs';
+	Utils::logger(array_merge(['request_time' => new \DateTime(), 'request_type' => 'php://input'], ['request_data' => json_decode(file_get_contents('php://input'))]), $request_log_dir);	
 
 
 ?>
@@ -28,44 +34,70 @@
 
 
 	$transaction = new Transaction();
-	$recd_data = json_decode(file_get_contents('php://input'));
+	$jsonData = file_get_contents('php://input');
+	if(!isset($jsonData)){
+		//sample data
+		$jsonData = '{
+			"type":"PRE",
+			"transactionId":"'.uniqid().'",
+	        "orderNumber":"1234567890",
+	        "currency_code":"404",
+	        "first_Name":"John",
+	        "last_Name":"Doe",
+	        "email":"abc@test.com",                
+	        "city":"Nairobi",
+	        "street":"Sifa Towers, Ring Rd",
+	        "account_number":"4000000000000002",
+	        "expiration_month":12,
+	        "expiration_year":2019,
+	        "amount":30000
+	    }' ;
+		$recd_data = json_decode($jsonData);
+	}
+	if($recd_data->type =='CCA'){
+		$cardDetails = $_SESSION['$recd_data'];
+		$req = new ClientRequest();
+		$req->makeRequest($cardDetails,$recd_data);
+	}
+	else{
 
-	$transaction->initInput($recd_data);
+		$transaction->initInput($recd_data);
+		$_SESSION['recd_data'] = $recd_data;
+
+			/*	$_SESSION['transactionId'] = uniqid();
+
+				$_SESSION['order'] = array(
+				    "OrderDetails" => array(
+				        "OrderNumber" =>  '1234567890',
+				        "Amount" => '1500',
+				        "CurrencyCode" => '404'
+				        )
+				);
+				$req = new ClientRequest();
+
+			     	$sample = '{
+			     		"order_id":"1234567890",
+			          	"first_Name":"John",
+			          	"last_Name":"Doe",
+						"street":"Sifa Towers, Ring Rd",
+			          	"city":"Nairobi",
+			          	"email":"abc@test.com",
+			          	"account_Number":"4000000000000002",
+			          	"expiration_Month":12,
+			          	"expiration_Year":2019,
+				        "currency":"KES",
+			          	"amount": 30000
+				 
+			     	}';
+			*/     	//$cardDetails = json_decode($sample);
+
+			//$req->makeRequest($cardDetails);
+			$transactionInfo = $transaction->getTransactionInfo();
 
 
-	$_SESSION['transactionId'] = uniqid();
-
-	$_SESSION['order'] = array(
-	    "OrderDetails" => array(
-	        "OrderNumber" =>  '1234567890',
-	        "Amount" => '1500',
-	        "CurrencyCode" => '404'
-	        )
-	);
-	$req = new ClientRequest();
-
-     	$sample = '{
-     		"order_id":"1234567890",
-          	"first_Name":"John",
-          	"last_Name":"Doe",
-			"street":"Sifa Towers, Ring Rd",
-          	"city":"Nairobi",
-          	"email":"abc@test.com",
-          	"account_Number":"4000000000000002",
-          	"expiration_Month":12,
-          	"expiration_Year":2019,
-	        "currency":"KES",
-          	"amount": 30000
-	 
-     	}';
-     	//$cardDetails = json_decode($sample);
-
-		//$req->makeRequest($cardDetails);
-
-
-		$jwtUtil = new JWTUtil();
-		$jwt = $jwtUtil->generateJwt($_SESSION['transactionId'], $_SESSION['order']);
-
+			$jwtUtil = new JWTUtil();
+			$jwt = $jwtUtil->generateJwt($transactionInfo->transactionId, $transactionInfo->orderNumber);
+		}
         session_unset();
         session_destroy();
 		//$success = $jwtUtil->validateJwt($jwt);
@@ -97,8 +129,12 @@
 				console.log(JSON.stringify(data,null, 2));
 		    switch(data.ActionCode){
 		      case "SUCCESS":
-		      // Handle successful transaction, send JWT to backend to verify
-		      	alert('success');
+
+				$.ajax({
+				  url: "Secure3d.php",
+				  method: "POST",
+				  data: JSON.stringify(data,null, 2)
+				})
 		      break;
 		     
 		      case "NOACTION":
@@ -209,8 +245,8 @@ OrderDetails
 		}
 	</script>
 <input type="hidden" id="JWTContainer" value= "<?php echo $jwt;?>" />
-<input type="text" data-cardinal-field="AccountNumber" id="creditCardNumber" name="creditCardNumber" />
-
+<!-- <input type="text" data-cardinal-field="AccountNumber" id="creditCardNumber" name="creditCardNumber" />
+ -->
 </body>
 
 </html>

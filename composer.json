@@ -1,0 +1,8 @@
+{
+    "require": {
+  		"cybersource/sdk-php": "*",
+        	"vlucas/phpdotenv": "^2.5",
+        "lcobucci/jwt": "^3.2",
+        "firebase/php-jwt": "^5.0"
+  	}
+}
