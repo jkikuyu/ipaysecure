@@ -35,10 +35,12 @@
 
 	$transaction = new Transaction();
 	$jsonData = file_get_contents('php://input');
-	if(!isset($jsonData)){
+	$recd_data = '';
+
+	if(!isset($jsonData) || empty($jsonData)){
 		//sample data
 		$jsonData = '{
-			"type":"PRE",
+			"type":"001",
 			"transactionId":"'.uniqid().'",
 	        "orderNumber":"1234567890",
 	        "currency_code":"404",
@@ -111,6 +113,9 @@
 	<script src="https://includestest.ccdc02.com/cardinalcruise/v1/songbird.js"></script>
 	<script src="https://code.jquery.com/jquery-3.3.0.js"></script>
 	<script>
+			//var val = "<?php echo $recd_data ?>";
+			//alert(val);
+
 		//https://developer.cardinalcommerce.com/cardinal-cruise-activation.shtml#validatingResponseJWT
 		$(document).ready(function(){
 			  initCCA();

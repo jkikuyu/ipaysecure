@@ -22,7 +22,7 @@
 
 
 
-        public function initInput($php_input = null){
+        public function initInput($recd_data = null){
             $required_params = [
                 'transactionId',
                 'orderNumber',
@@ -38,23 +38,28 @@
                 "amount"
             ];
             try{
-                if(empty($php_input)){
+                if(empty($recd_data)){
                     throw new \InvalidArgumentException('POST JSON cannot be empty');
                 }
-                $valid_input = Utils::validatePhpInput($php_input, $required_params);
-                $this->transactionId = $valid_input->transactionId;
-                $this->orderId = $valid_input->orderNumber;
-                $this->currencycode = $valid_input->currency_code;
-                $this->first_Name = $valid_input->first_Name;
-                $this->last_Name = $valid_input->last_Name;
-                $this->email = $valid_input->email;
-                $this->account_number = $valid_input->account_number;
-                $this->city = $valid_input->city;
-                $this->street = $valid_input->street;
-                $this->amount = $valid_input->amount;
-                $this->account_number = $valid_input->account_number;
-                $this->expiration_month = $valid_input->expiration_month;
-                $this->expiration_year =  $valid_input->expiration_year;
+                $isValid = Utils::validatePhpInput($recd_data, $required_params);
+                if($isValid){
+                    $this->transactionId = $recd_data->transactionId;
+                    $this->orderId = $recd_data->orderNumber;
+                    $this->currencycode = $recd_data->currency_code;
+                    $this->first_Name = $recd_data->first_Name;
+                    $this->last_Name = $recd_data->last_Name;
+                    $this->email = $recd_data->email;
+                    $this->account_number = $recd_data->account_number;
+                    $this->city = $recd_data->city;
+                    $this->street = $recd_data->street;
+                    $this->amount = $recd_data->amount;
+                    $this->account_number = $recd_data->account_number;
+                    $this->expiration_month = $recd_data->expiration_month;
+                    $this->expiration_year =  $recd_data->expiration_year;
+                }
+                else{
+                    return $res;
+                }
 
             }
             catch(\InvalidArgumentException $e){

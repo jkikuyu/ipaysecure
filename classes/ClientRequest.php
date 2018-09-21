@@ -36,10 +36,17 @@ class ClientRequest{
 		$client = new CybsNameValuePairClient();
 
 
+
 		$request = array();
 		$request['ccAuthService_run'] = 'true';
-		$request['ccAuthService_commerceIndicator'] = 
-		$request['ccAuthService_cavv'] = 
+		$request['ccAuthService_cavv'] = '';
+	/*	card_cardType=001
+ccAuthService_commerceIndicator=vbv
+ccAuthService_xid=WhPlErd9WE2pb12345HlewUIQwQ
+ccAuthService_veresEnrolled=Y
+ccAuthService_paresStatus=Y
+ccAuthService_cavv=PpmBUYXt2uyt12345mAb8XgnOk
+*/
 		$request['merchantReferenceCode'] = $this->order_id;
 		$request['billTo_firstName'] = $this->first_Name;
 		$request['billTo_lastName']  = $this->last_Name;

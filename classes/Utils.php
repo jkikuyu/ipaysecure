@@ -1,28 +1,50 @@
 <?php
     /**
     ** @author:andrew
+    ** modified by Jude
     **/
 namespace IpaySecure;
 final class Utils{
     public static function validatePhpInput($raw_input, array $required_params){
-        $res_obj = null;
+        $res = null;
         var_dump($raw_input);
+        $isValid = true;
         if($raw_input){
             foreach($required_params as $param){
                 if(!property_exists($raw_input, $param) || empty($raw_input->$param) || !(is_string($raw_input->$param) || is_int($raw_input->$param))){
-                    die($param . ' is required');
-                    return false;
+                    //die($param . ' is required');
+                    $_SESSION['res']= '{"errorcode":"1",
+                        "message":$param . " is required"
+                    }';
+                    $isValid = false;
+                    break;
                 }
                 else{
-                    $res_obj[$param] = $raw_input->$param;
+                    if($param == 'email'){
+                        $email = $raw_input->$param;
+                        $isValid = (new Utils())->validEmail($email);
+                        if(!$isValid){
+                            $_SESSION['res']= '{"errorcode":"2",
+                                "message":$param . " is invalid"
+                                }';
+
+                            $isValid = false;
+                            break;
+                        }
+                    }
+                    //$res_obj[$param] = $raw_input->$param;
                 }
             }
-            return (object) $res_obj;
         }
         else{
-            throw new Exception('The following parameters are required ' . json_encode($required_params));
-            return false;
+            $isValid = false;
+            $json = json_encode($required_params);
+            $_SESSION['res'] = $json;
+            
+            throw new Exception('The following parameters are required ' . $json);
         }
+        return $isValid;
+
     }
     public static function formatError(\Exception $e, $error_desc){
         $message = ((json_decode($e->getMessage()) == null) ? $e->getMessage() : json_decode($e->getMessage()));
@@ -75,6 +97,14 @@ final class Utils{
 
             file_put_contents($dir."/".date("Y-m-d").'.log', $logs."\n", FILE_APPEND | LOCK_EX);
         }
+    }
+    private function validEmail($email){
+        $email = filter_var($email, FILTER_SANITIZE_EMAIL);
+        $isValid = false;
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+             $isValid  = true;
+        } 
+        return  $isValid;
     }
 }
 ?>
