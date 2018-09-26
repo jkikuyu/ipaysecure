@@ -31,7 +31,8 @@ class ClientRequest{
 		$this->amount = '290.00';
      }
      public function makeRequest($cardDetails, $cca){
-     	$this->validCard($cardDetails);
+     	setCardDeatils($cardDetails);
+     //	$this->validCard($cardDetails);
 
 		$client = new CybsNameValuePairClient();
 
@@ -39,14 +40,7 @@ class ClientRequest{
 
 		$request = array();
 		$request['ccAuthService_run'] = 'true';
-		$request['ccAuthService_cavv'] = '';
-	/*	card_cardType=001
-ccAuthService_commerceIndicator=vbv
-ccAuthService_xid=WhPlErd9WE2pb12345HlewUIQwQ
-ccAuthService_veresEnrolled=Y
-ccAuthService_paresStatus=Y
-ccAuthService_cavv=PpmBUYXt2uyt12345mAb8XgnOk
-*/
+		$request['card_cardType']= $this->type;
 		$request['merchantReferenceCode'] = $this->order_id;
 		$request['billTo_firstName'] = $this->first_Name;
 		$request['billTo_lastName']  = $this->last_Name;
@@ -60,9 +54,43 @@ ccAuthService_cavv=PpmBUYXt2uyt12345mAb8XgnOk
 		$request['card_expirationMonth'] = $this->expiration_Month;
 		$request['card_expirationYear'] = $this->expiration_Year;
 		$request['purchaseTotals_currency'] =$this->currency;
-		//$request['item_0_unitPrice'] = $this->amount;
-		$request['item_0_unitPrice'] = '12.34';
-		$request['item_1_unitPrice'] = '56.78';
+		$request['item_0_unitPrice'] = $this->amount;
+		if($cca !== null){
+			var_dump($cca);
+			// include authentication request
+			/**
+				
+				{
+					  "Validated": true,
+					  "ErrorNumber": 0,
+					  "ErrorDescription": "Success",
+					  "ActionCode": "SUCCESS",
+					  "Payment": {
+					    "Type": "CCA",
+					    "ExtendedData": {
+					      "CAVV": "jELUbgG+Tfj0AREACMLdCae+oIs=",
+					      "ECIFlag": "02",
+					      "XID": "TTdENWJjVngxVHF0YUJlQUcxbjA=",
+					      "UCAFIndicator": "2",
+					      "Enrolled": "Y",
+					      "PAResStatus": "Y",
+					      "SignatureVerification": "Y"
+					    },
+					    "ProcessorTransactionId": "M7D5bcVx1TqtaBeAG1n0"
+					  }
+} 
+			**/
+			$request['ccAuthService_cavv'] = $cca->CAVV;
+			$request['ccAuthService_commerceIndicator']=$cca->ccAuthService_commerceIndicator;
+			$request['ccAuthService_xid'] = $cca->XID;
+			$request['ccAuthService_veresEnrolled'] = $cca->Enrolled;
+			$request['ccAuthService_paresStatus']=$cca->PAResStatus;
+		}
+
+
+		}
+		//$request['item_0_unitPrice'] = '12.34';
+		//$request['item_1_unitPrice'] = '56.78';
 
 		//$request['item_1_unitPrice'] = '56.78';
 		$reply = $client->runTransaction($request);
@@ -77,6 +105,27 @@ ccAuthService_cavv=PpmBUYXt2uyt12345mAb8XgnOk
 		print_r($arr);
 		echo '</pre>';
 		**/
+	}
+	public function setCardDetails($cardDetails){
+
+		$this->order_id = $cardDetails->order_id;
+		$this->firstName = $cardDetails->first_Name;
+		$this->lastName = $cardDetails->last_Name;
+		$this->street  =  $cardDetails->street;
+		$this->city=$cardDetails->city;
+		$this->email = $cardDetails->email;
+		$this->accountNumber=$cardDetails->account_number;
+		$this->expirationMonth=$cardDetails->card_expiration_month;
+		$this->expirationYear = $cardDetails->card_expiration_yea;
+		
+		$this->amount = $cardDetails->amount;
+		$arr =include('iso_4217_currency_codes.php');
+			foreach ($arr as $currency => $code) {
+			 if ($code[1] === '404'){
+			 	$this->currency = $cardDetails->$currency;
+			 	break;
+		 }
+
 	}
 
 	function validCard($required){

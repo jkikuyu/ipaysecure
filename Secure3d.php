@@ -36,26 +36,13 @@
 	$transaction = new Transaction();
 	$jsonData = file_get_contents('php://input');
 	$recd_data = '';
-
+	echo $jsonData;
 	if(!isset($jsonData) || empty($jsonData)){
 		//sample data
-		$jsonData = '{
-			"type":"001",
-			"transactionId":"'.uniqid().'",
-	        "orderNumber":"1234567890",
-	        "currency_code":"404",
-	        "first_Name":"John",
-	        "last_Name":"Doe",
-	        "email":"abc@test.com",                
-	        "city":"Nairobi",
-	        "street":"Sifa Towers, Ring Rd",
-	        "account_number":"4000000000000002",
-	        "expiration_month":12,
-	        "expiration_year":2019,
-	        "amount":30000
-	    }' ;
-		$recd_data = json_decode($jsonData);
+		$jsonData = '{"type":"001","transactionId":"'.uniqid().'","orderNumber":"1234567890","orderDescription":"test Description","currency_code":"404","first_Name":"John","last_Name":"Doe","email":"abc@test.com","city":"Nairobi","street":"Sifa Towers, Ring Rd","account_number":"4000000000000002","card_cvv":"366","card_expiration_month":12,"card_expiration_year":2019,"amount":30000}' ;
 	}
+	$recd_data = json_decode($jsonData);
+
 	if($recd_data->type =='CCA'){
 		$cardDetails = $_SESSION['$recd_data'];
 		$req = new ClientRequest();
@@ -113,7 +100,7 @@
 	<script src="https://includestest.ccdc02.com/cardinalcruise/v1/songbird.js"></script>
 	<script src="https://code.jquery.com/jquery-3.3.0.js"></script>
 	<script>
-			//var val = "<?php echo $recd_data ?>";
+			var purchase = <?php echo $jsonData; ?>;
 			//alert(val);
 
 		//https://developer.cardinalcommerce.com/cardinal-cruise-activation.shtml#validatingResponseJWT
@@ -131,14 +118,20 @@
 			});	
 			Cardinal.on("payments.validated", function (data, jwt) {
 				
-				console.log(JSON.stringify(data,null, 2));
+			console.log(JSON.stringify(data,null, 2));
 		    switch(data.ActionCode){
 		      case "SUCCESS":
 
 				$.ajax({
-				  url: "Secure3d.php",
+				  url: "http://localhost/ipaysecure/Secure3d.php",
 				  method: "POST",
-				  data: JSON.stringify(data,null, 2)
+				  data: JSON.stringify(data),
+				  success: function(result){
+				  	console.log(result)
+				  },
+				  error:function(error){
+				  	console.log('Error ${error}')
+				  }
 				})
 		      break;
 		     
@@ -164,24 +157,27 @@
 		
 		function card_start(){
 			alert ("starting");
+			alert (purchase.amount);
+			//Order channel:     M – MOTO (Mail Order Telephone Order), R – Retail
+    		//S – eCommerce ,P – Mobile Device,  T – Tablet
+
 		Cardinal.start("cca", { 
 		  OrderDetails: {
-		    OrderNumber: "1234567890",
-		    Amount:"1500",
-		    CurrencyCode: "404",
-		    OrderDescription:"test description",
-		    OrderChannel:"M"
+		    OrderNumber: purchase.orderNumber,
+		    Amount:purchase.amount,
+		    CurrencyCode: purchase.currency_code,
+		    OrderDescription:purchase.OrderDescription,
+		    OrderChannel:"S"
 
 		},
 		Consumer: {
-		    Email1: "joe@abc.com",
-
+			email1:purchase.email,
 			Account:{
-		    AccountNumber: "4000000000000002",
-		    ExpirationMonth: "12",
-		    ExpirationYear: "2019",
-		    NameOnAccount:"John Doe",
-		    CardCode:"366"
+		    AccountNumber: purchase.account_number,
+		    ExpirationMonth: purchase.card_expiration_month,
+		    ExpirationYear: purchase.card_expiration_year,
+		    NameOnAccount:purchase.first_Name ,
+		    CardCode:purchase.card_cvv
 			}
 		}
 	

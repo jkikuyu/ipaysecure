@@ -9,6 +9,7 @@
     class Transaction implements TransactionInterface{
         private $transactionId;
         private $orderId;
+        private $orderDescription;
         private $currencycode;
         private $first_Name;
         private $last_Name;
@@ -17,6 +18,8 @@
         private $account_number;
         private $expiration_month;
         private $expiration_year;
+        private $cvv;
+
         private $currency;
         private $amount;
 
@@ -24,8 +27,10 @@
 
         public function initInput($recd_data = null){
             $required_params = [
+                'type',
                 'transactionId',
                 'orderNumber',
+                'orderDescription',
                 'currency_code',
                 'first_Name',
                 'last_Name',
@@ -33,8 +38,9 @@
                 'city',
                 'street',
                 'account_number',
-                'expiration_month',
-                "expiration_year",
+                'card_expiration_month',
+                "card_expiration_year",
+                "card_cvv",
                 "amount"
             ];
             try{
@@ -45,6 +51,8 @@
                 if($isValid){
                     $this->transactionId = $recd_data->transactionId;
                     $this->orderId = $recd_data->orderNumber;
+                    $this->orderDescription = $recd_data->orderDescription;
+
                     $this->currencycode = $recd_data->currency_code;
                     $this->first_Name = $recd_data->first_Name;
                     $this->last_Name = $recd_data->last_Name;
@@ -54,8 +62,10 @@
                     $this->street = $recd_data->street;
                     $this->amount = $recd_data->amount;
                     $this->account_number = $recd_data->account_number;
-                    $this->expiration_month = $recd_data->expiration_month;
-                    $this->expiration_year =  $recd_data->expiration_year;
+                    $this->expiration_month = $recd_data->card_expiration_month;
+                    $this->expiration_year =  $recd_data->card_expiration_year;
+                    $this->cvv =  $recd_data->card_cvv;
+
                 }
                 else{
                     return $res;
