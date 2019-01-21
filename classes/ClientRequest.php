@@ -15,8 +15,7 @@ class ClientRequest{
 	private $currency ;
 	private $amount;
 
-    function __construct()
-      {
+    function __construct(){
       	// Test credentials
     	$this->order_id = 'A12356789';
 		$this->firstName = 'John';
@@ -24,7 +23,7 @@ class ClientRequest{
 		$this->street  =  '';
 		$this->city='Nairobi';
 		$this->email = "abc@test.com";
-		$this->accountNumber='4111111111111111';
+		$this->accountNumber='	4000000000000002';
 		$this->expirationMonth='12';
 		$this->expirationYear = '2019';
 		$this->currency = 'KES';
@@ -56,7 +55,7 @@ class ClientRequest{
 		$request['purchaseTotals_currency'] =$this->currency;
 		$request['item_0_unitPrice'] = $this->amount;
 		if($cca !== null){
-			var_dump($cca);
+			//var_dump($cca);
 			// include authentication request
 			/**
 				
@@ -88,12 +87,11 @@ class ClientRequest{
 		}
 
 
-		}
 		//$request['item_0_unitPrice'] = '12.34';
 		//$request['item_1_unitPrice'] = '56.78';
 
 		//$request['item_1_unitPrice'] = '56.78';
-		$reply = $client->runTransaction($request);
+		//$reply = $client->runTransaction($request);
 
 		// This section will show all the reply fields.
 		/**
@@ -116,7 +114,7 @@ class ClientRequest{
 		$this->email = $cardDetails->email;
 		$this->accountNumber=$cardDetails->account_number;
 		$this->expirationMonth=$cardDetails->card_expiration_month;
-		$this->expirationYear = $cardDetails->card_expiration_yea;
+		$this->expirationYear = $cardDetails->card_expiration_year;
 		
 		$this->amount = $cardDetails->amount;
 		$arr =include('iso_4217_currency_codes.php');
@@ -124,7 +122,8 @@ class ClientRequest{
 			 if ($code[1] === '404'){
 			 	$this->currency = $cardDetails->$currency;
 			 	break;
-		 }
+			}
+		}
 
 	}
 
@@ -135,7 +134,6 @@ class ClientRequest{
             }
             else{
             	$this->$key = $value;
-
             }
 
         }

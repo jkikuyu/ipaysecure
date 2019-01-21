@@ -4,6 +4,8 @@
     **/
     namespace IpaySecure;
     use IpaySecure\INT\TransactionInterface;
+	register_shutdown_function(array('IpaySecure\Utils', 'suddenDeath'));
+
     //require_once(dirname(__dir__).'/interfaces/TransactionInterface.php');
     require_once ('classes/interfaces/TransactionInterface.php');
     class Transaction implements TransactionInterface{

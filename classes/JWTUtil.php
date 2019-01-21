@@ -9,13 +9,13 @@
     use Firebase\JWT\JWT;
     use Dotenv\Dotenv;
 
-        $dotenv = new Dotenv(__DIR__.'/../');
+        $dotenv = new Dotenv(__DIR__.'/secure');
         $dotenv->load();
 
     class JWTUtil {
 
         private $api_Key ;
-        private$api_Id ;
+        private $api_Id ;
         private $orgUnit_Id;
         function __construct() {
             /* test credentials*/

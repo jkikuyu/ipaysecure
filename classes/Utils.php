@@ -4,10 +4,12 @@
     ** modified by Jude
     **/
 namespace IpaySecure;
+use Dotenv\Dotenv;   
+
 final class Utils{
     public static function validatePhpInput($raw_input, array $required_params){
         $res = null;
-        var_dump($raw_input);
+        //var_dump($raw_input);
         $isValid = true;
         if($raw_input){
             foreach($required_params as $param){
@@ -56,6 +58,36 @@ final class Utils{
         ];
         return json_encode($err_obj);
     }
+    public static function getLogFile(){
+        $dotenv = new Dotenv(__DIR__.'/secure');
+        $dotenv->load();
+        $dirname = getenv('LOGDIR');
+
+        if(!is_string($dirname)){
+            throw new \InvalidArgumentException('dirname must be a string');
+        }
+        else{
+            // $logs    = (is_array($logs))? json_encode($logs, JSON_PRETTY_PRINT): (string)$logs;
+            
+            $dir = $dirname;
+
+            $base_dir = dirname(__dir__).'/';
+ 
+            $save_dir = $base_dir.$dirname;
+
+            $dir_exists = (file_exists($save_dir) && is_dir($save_dir));
+
+            if(!$dir_exists){
+                if(!mkdir($save_dir, 0755, true)){
+                    throw new \Exception('Unable to create directory');
+                }
+            }
+            $dir = $save_dir;
+
+        }
+        return  $dir."/".date("Y-m-d").'.log';
+    }
+
     public static function array_to_xml($array, &$xml_user_info) {
         foreach($array as $key => $value) {
             if(is_array($value)) {
@@ -106,5 +138,33 @@ final class Utils{
         } 
         return  $isValid;
     }
+    public static function suddenDeath(){
+    /**
+    @author Jude
+    date:19/10/2018
+    This will cater for sudden program termination that is non recoverabel resulting from making non existent calls. 
+    **/
+
+    $filepath = Utils::getLogFile();
+
+    $error = error_get_last();
+    if ($error['type'] === E_ERROR) {
+        // fatal error has occured
+         $logs = json_encode($error);
+        file_put_contents($filepath, $logs."\n", FILE_APPEND | LOCK_EX);
+
+    }
+
+    }
+	public static function infoMsg($info){
+		self::$log->info($info);
+
+	}
+	public static function errMsg($error){
+
+		self::$log->Error($error);
+
+	}
+
 }
 ?>

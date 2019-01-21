@@ -4,12 +4,11 @@
 	use IpaySecure\ClientRequest;
 	use IpaySecure\Transaction;
 	//use IpaySecure\Utils;
-	require_once dirname(__DIR__) . '/ipaysecure/vendor/autoload.php';
-
-	require_once ('classes/ClientRequest.php');
-	require_once ('classes/JWTUtil.php');
+	require_once dirname(__FILE__) . '/vendor/autoload.php';
 	require_once ('classes/Utils.php');
 	require_once ('classes/Transaction.php');
+	require_once ('classes/ClientRequest.php');
+	require_once ('classes/JWTUtil.php');
 
 	error_reporting(E_ALL);
 	ini_set('display_errors', 1);
@@ -35,14 +34,16 @@
 
 	$transaction = new Transaction();
 	$jsonData = file_get_contents('php://input');
-	$recd_data = '';
 	echo $jsonData;
+	$recd_data = '';
+	//echo $jsonData;
 	if(!isset($jsonData) || empty($jsonData)){
 		//sample data
 		$jsonData = '{"type":"001","transactionId":"'.uniqid().'","orderNumber":"1234567890","orderDescription":"test Description","currency_code":"404","first_Name":"John","last_Name":"Doe","email":"abc@test.com","city":"Nairobi","street":"Sifa Towers, Ring Rd","account_number":"4000000000000002","card_cvv":"366","card_expiration_month":12,"card_expiration_year":2019,"amount":30000}' ;
 	}
+	//echo $jsonData;
 	$recd_data = json_decode($jsonData);
-
+	
 	if($recd_data->type =='CCA'){
 		$cardDetails = $_SESSION['$recd_data'];
 		$req = new ClientRequest();
@@ -96,18 +97,25 @@
 <!--Staging URL: https://songbirdstag.cardinalcommerce.com/edge/v1/songbird.js -->
 
 <!--Sandbox URL: https://utilsbox.cardinalcommerce.com/cardinalcruise/v1/songbird.js -->
-
 	<script src="https://includestest.ccdc02.com/cardinalcruise/v1/songbird.js"></script>
+	<!--script src="https://includestest.ccdc02.com/cardinalcruise/v1/songbird.js"></script>-->
 	<script src="https://code.jquery.com/jquery-3.3.0.js"></script>
 	<script>
 			var purchase = <?php echo $jsonData; ?>;
 			//alert(val);
 
-		//https://developer.cardinalcommerce.com/cardinal-cruise-activation.shtml#validatingResponseJWT
-		$(document).ready(function(){
-			  initCCA();
-		});		
-		
+			//https://developer.cardinalcommerce.com/cardinal-cruise-activation.shtml#validatingResponseJWT
+			var orderObject = {
+			  Consumer: {
+				Account: {
+				  AccountNumber: purchase.account_number
+				}
+			  }
+			};
+
+			$(document).ready(function(){
+				  initCCA();
+			});		
 		
 					//Listen for Events
 		    Cardinal.on('payments.setupComplete', function(setupCompleteData){
@@ -118,21 +126,46 @@
 			});	
 			Cardinal.on("payments.validated", function (data, jwt) {
 				
-			console.log(JSON.stringify(data,null, 2));
+			//console.log(JSON.stringify(data,null, 2));
 		    switch(data.ActionCode){
 		      case "SUCCESS":
+		      	console.log('validated result ....................');
+					
+				/*
+				$('#accno').append(
+					$('<input>', {
+						type: 'text',
+						id:'creditCardNumber',
+						name:'creditCardNumber'
+						
+					})
+				);		
+				document.getElementById('creditCardNumber').dataset.cardinalField= "AccountNumber";
+				*/
 
+		      	console.log ("dataxxxxxxxxxxxxxx :"+JSON.stringify(data));
+/*
 				$.ajax({
-				  url: "http://localhost/ipaysecure/Secure3d.php",
+				  url: "Secure3d.php",
 				  method: "POST",
 				  data: JSON.stringify(data),
+				  datatype : "application/json",
 				  success: function(result){
-				  	console.log(result)
+				  	console.log("resultxxxxxxxxxxxxxx:"  + result)
 				  },
 				  error:function(error){
-				  	console.log('Error ${error}')
+				  	console.log('Error ${error}');
 				  }
-				})
+				});
+*/
+		fetch("Secure3d.php", {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        body: JSON.stringify(data), // body data type must match "Content-Type" header
+    })
+    .then(response => {
+			console.log(response.json())}); // parses response to JSON
+
+			
 		      break;
 		     
 		      case "NOACTION":
@@ -176,8 +209,7 @@
 		    AccountNumber: purchase.account_number,
 		    ExpirationMonth: purchase.card_expiration_month,
 		    ExpirationYear: purchase.card_expiration_year,
-		    NameOnAccount:purchase.first_Name ,
-		    CardCode:purchase.card_cvv
+		    NameOnAccount:purchase.first_Name 
 			}
 		}
 	
@@ -239,15 +271,16 @@ OrderDetails
 			// get jwt container
 			console.log(JSON.stringify(document.getElementById("JWTContainer").value));
 			Cardinal.setup("init", {
-			    jwt: document.getElementById("JWTContainer").value
+			    jwt: document.getElementById("JWTContainer").value,
+				order: orderObject
 			});
 
 	
 		}
 	</script>
 <input type="hidden" id="JWTContainer" value= "<?php echo $jwt;?>" />
-<!-- <input type="text" data-cardinal-field="AccountNumber" id="creditCardNumber" name="creditCardNumber" />
- -->
+<div id="accno"></div>
+ 
 </body>
 
 </html>
