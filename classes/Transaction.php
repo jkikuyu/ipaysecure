@@ -29,7 +29,6 @@
 
         public function initInput($recd_data = null){
             $required_params = [
-                'type',
                 'transactionId',
                 'orderNumber',
                 'orderDescription',

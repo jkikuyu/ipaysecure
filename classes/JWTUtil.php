@@ -9,8 +9,10 @@
     use Firebase\JWT\JWT;
     use Dotenv\Dotenv;
 
+/*
         $dotenv = new Dotenv(__DIR__.'/secure');
         $dotenv->load();
+*/
 
     class JWTUtil {
 
@@ -69,6 +71,6 @@
             }
             return $retval;    
         }
-}
+	}
 ?>
 

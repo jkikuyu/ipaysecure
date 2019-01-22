@@ -1,8 +1,10 @@
 <?php
+/**
+** @author :jude
+**/
 namespace IpaySecure;
 
-
-class ClientRequest{
+	class ClientRequest{
 	private $reference_Code;
 	private $first_Name ;
 	private $last_Name;
@@ -29,11 +31,12 @@ class ClientRequest{
 		$this->currency = 'KES';
 		$this->amount = '290.00';
      }
-     public function makeRequest($cardDetails, $cca){
-     	setCardDeatils($cardDetails);
+     public function makeRequest($cardDetails){
+     	self::setCardDetails($cardDetails);
+		 	  
      //	$this->validCard($cardDetails);
 
-		$client = new CybsNameValuePairClient();
+		$client = new \CybsNameValuePairClient();
 
 
 
@@ -78,12 +81,13 @@ class ClientRequest{
 					    "ProcessorTransactionId": "M7D5bcVx1TqtaBeAG1n0"
 					  }
 } 
-			**/
+		
 			$request['ccAuthService_cavv'] = $cca->CAVV;
 			$request['ccAuthService_commerceIndicator']=$cca->ccAuthService_commerceIndicator;
 			$request['ccAuthService_xid'] = $cca->XID;
 			$request['ccAuthService_veresEnrolled'] = $cca->Enrolled;
 			$request['ccAuthService_paresStatus']=$cca->PAResStatus;
+		**/
 		}
 
 
@@ -91,10 +95,10 @@ class ClientRequest{
 		//$request['item_1_unitPrice'] = '56.78';
 
 		//$request['item_1_unitPrice'] = '56.78';
-		//$reply = $client->runTransaction($request);
+		$reply = $client->runTransaction($request);
 
 		// This section will show all the reply fields.
-		/**
+		
 		echo '<pre>';
 		print("\nRESPONSE:\n" . $reply);
 		preg_match_all("/ ([^:=]+) [:=]+ ([^\\n]+) /x",  $reply, $p);
@@ -102,11 +106,10 @@ class ClientRequest{
 		//$arr = explode("=",  $reply);
 		print_r($arr);
 		echo '</pre>';
-		**/
 	}
 	public function setCardDetails($cardDetails){
 
-		$this->order_id = $cardDetails->order_id;
+		$this->order_id = $cardDetails->orderNumber;
 		$this->firstName = $cardDetails->first_Name;
 		$this->lastName = $cardDetails->last_Name;
 		$this->street  =  $cardDetails->street;
@@ -119,8 +122,8 @@ class ClientRequest{
 		$this->amount = $cardDetails->amount;
 		$arr =include('iso_4217_currency_codes.php');
 			foreach ($arr as $currency => $code) {
-			 if ($code[1] === '404'){
-			 	$this->currency = $cardDetails->$currency;
+			 if ($code === $cardDetails->currency_code){
+			 	$this->currency =$currency;
 			 	break;
 			}
 		}
