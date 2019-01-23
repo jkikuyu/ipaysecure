@@ -1,9 +1,12 @@
 <?php
 namespace IpaySecure;
+require_once ('classes/ClientRequest.php');
+
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 session_start();
+
 $jsonData = file_get_contents('php://input');
 $req = new ClientRequest();
 

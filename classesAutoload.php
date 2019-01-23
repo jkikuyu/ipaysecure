@@ -8,7 +8,6 @@
  */
 function classesAutoload($classname){
     //Can't use __DIR__ as it's only in PHP 5.3+
-			echo $classname;
 	
 	if($pos = strpos($classname,"\\")){
 		//caters for namespace paramater
@@ -40,6 +39,7 @@ if (version_compare(PHP_VERSION, '5.1.2', '>=')) {
 }
 
 require_once('../vendor/autoload.php');
+
 /*
 require_once ('classes/Utils.php');
 require_once ('classes/Transaction.php');

@@ -2,7 +2,9 @@
 /**
 ** @author :jude
 **/
+
 namespace IpaySecure;
+	require_once('classesAutoload.php');
 
 	class ClientRequest{
 	private $reference_Code;
@@ -16,18 +18,19 @@ namespace IpaySecure;
 	private $expiration_Year ;
 	private $currency ;
 	private $amount;
+	private $cardType;
 
     function __construct(){
       	// Test credentials
     	$this->order_id = 'A12356789';
-		$this->firstName = 'John';
-		$this->lastName = 'Doe';
+		$this->first_Name = 'John';
+		$this->last_Name = 'Doe';
 		$this->street  =  '';
 		$this->city='Nairobi';
 		$this->email = "abc@test.com";
-		$this->accountNumber='	4000000000000002';
-		$this->expirationMonth='12';
-		$this->expirationYear = '2019';
+		$this->account_Number='	4000000000000002';
+		$this->expiration_Month='12';
+		$this->expiration_Year = '2019';
 		$this->currency = 'KES';
 		$this->amount = '290.00';
      }
@@ -35,14 +38,19 @@ namespace IpaySecure;
      	self::setCardDetails($cardDetails);
 		 	  
      //	$this->validCard($cardDetails);
+		 $tag = 'ipaysecure';
+		Utils::getLogFile($tag);
+		$merchantId = getenv('MERCHANT_ID');
+		$transactionkey = getenv('TRANSACTION_KEY');
+		$options = [$merchantId,$transactionkey];
 
-		$client = new \CybsNameValuePairClient();
+		$client = new \CybsNameValuePairClient($options);
 
 
-
+		 echo "bill to :". $this->last_Name;
 		$request = array();
 		$request['ccAuthService_run'] = 'true';
-		$request['card_cardType']= $this->type;
+		$request['card_cardType']= $this->cardType;
 		$request['merchantReferenceCode'] = $this->order_id;
 		$request['billTo_firstName'] = $this->first_Name;
 		$request['billTo_lastName']  = $this->last_Name;
@@ -108,17 +116,18 @@ namespace IpaySecure;
 		echo '</pre>';
 	}
 	public function setCardDetails($cardDetails){
-
+		//echo "last name". $cardDetails->last_Name;
+		
 		$this->order_id = $cardDetails->orderNumber;
-		$this->firstName = $cardDetails->first_Name;
-		$this->lastName = $cardDetails->last_Name;
+		$this->first_Name = $cardDetails->first_Name;
+		$this->last_Name = $cardDetails->last_Name;
 		$this->street  =  $cardDetails->street;
 		$this->city=$cardDetails->city;
 		$this->email = $cardDetails->email;
-		$this->accountNumber=$cardDetails->account_number;
-		$this->expirationMonth=$cardDetails->card_expiration_month;
-		$this->expirationYear = $cardDetails->card_expiration_year;
-		
+		$this->account_Number=$cardDetails->account_number;
+		$this->expiration_Month=$cardDetails->card_expiration_month;
+		$this->expiration_Year = $cardDetails->card_expiration_year;
+		$this->cardType = $cardDetails->cardType;
 		$this->amount = $cardDetails->amount;
 		$arr =include('iso_4217_currency_codes.php');
 			foreach ($arr as $currency => $code) {

@@ -21,7 +21,7 @@
         private $expiration_month;
         private $expiration_year;
         private $cvv;
-
+		private $cardType;
         private $currency;
         private $amount;
 
@@ -29,6 +29,7 @@
 
         public function initInput($recd_data = null){
             $required_params = [
+				'cardType',
                 'transactionId',
                 'orderNumber',
                 'orderDescription',
@@ -53,7 +54,7 @@
                     $this->transactionId = $recd_data->transactionId;
                     $this->orderId = $recd_data->orderNumber;
                     $this->orderDescription = $recd_data->orderDescription;
-
+					
                     $this->currencycode = $recd_data->currency_code;
                     $this->first_Name = $recd_data->first_Name;
                     $this->last_Name = $recd_data->last_Name;
@@ -66,7 +67,7 @@
                     $this->expiration_month = $recd_data->card_expiration_month;
                     $this->expiration_year =  $recd_data->card_expiration_year;
                     $this->cvv =  $recd_data->card_cvv;
-
+					$this->cardType = $recd_data->cardType;
                 }
                 else{
                     return $res;
@@ -82,6 +83,7 @@
         }
         public function getTransactionInfo(){
             return (object) [
+				'cardType'=>$this->cardType,
                 'transactionId'=>$this->transactionId,
                 'orderNumber'=> $this->orderId,
                 'currency_code'=>$this->currencycode,

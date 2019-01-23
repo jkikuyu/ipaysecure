@@ -13,6 +13,7 @@
 	$request_log_dir = 'request_logs';
 	$tag = 'ipaysecure';
 	Utils::getLogFile($tag);
+
 /*
 	Utils::logger(array_merge(['request_time' => new \DateTime(), 'request_type' => 'php://input'], ['request_data' => json_decode(file_get_contents('php://input'))]), $request_log_dir);	
 */
@@ -39,7 +40,7 @@
 	if(!isset($jsonData) || empty($jsonData)){
 		//sample data
 		$jsonData = '{
-		"transactionId":"'.uniqid().'","orderNumber":"1234567890","orderDescription":"test Description","currency_code":"404","first_Name":"John","last_Name":"Doe","email":"abc@test.com","city":"Nairobi","street":"Sifa Towers, Ring Rd","account_number":"4000000000000002","card_cvv":"366","card_expiration_month":12,"card_expiration_year":2019,"amount":30000}' ;
+		"cardType":"001","transactionId":"'.uniqid().'","orderNumber":"1234567890","orderDescription":"test Description","currency_code":"404","first_Name":"John","last_Name":"Doe","email":"abc@test.com","city":"Nairobi","street":"Sifa Towers, Ring Rd","account_number":"4000000000000002","card_cvv":"366","card_expiration_month":12,"card_expiration_year":2019,"amount":30000}' ;
 	}
 	$recd_data = json_decode($jsonData);
 	$transaction->initInput($recd_data);
