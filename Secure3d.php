@@ -40,8 +40,35 @@
 	if(!isset($jsonData) || empty($jsonData)){
 		//sample data
 		$jsonData = '{
-		"cardType":"001","transactionId":"'.uniqid().'","orderNumber":"1234567890","orderDescription":"test Description","currency_code":"404","first_Name":"John","last_Name":"Doe","email":"abc@test.com","city":"Nairobi","street":"Sifa Towers, Ring Rd","account_number":"4000000000000002","card_cvv":"366","card_expiration_month":12,"card_expiration_year":2019,"amount":30000}' ;
-	}
+		"cardType":"001",
+		"street":"Sifa Towers, Lenana Rd"
+		"OrderDetails":{
+			"OrderNumber":"1234567890",
+			"OrderDescription":"test Description", 
+			"Amount":"30000",
+			"currency_code":"404",
+			"transactionId":"'.uniqid().'"
+		},
+		"Consumer":{
+			"Email1":"abc@test.com",
+			"BillingAddress":{
+				FirstName:"John",
+				MiddleName:"C",
+				LastName:"Doe",
+				Address1:"sdfdfdfddfddf",
+				City:"Nairobi",
+				Phone1:"3234455"
+			}
+		},
+		"Account":{
+			"AccountNumber":"4000000000000002",
+			"CardCode":"366",
+			"ExpirationMonth":"12",
+			"ExpirationYear":"2019"
+		}
+
+	}'
+	
 	$recd_data = json_decode($jsonData);
 	$transaction->initInput($recd_data);
 	$_SESSION['recd_data'] = $recd_data;
@@ -142,10 +169,10 @@
 
 			Cardinal.start("cca", { 
 			  OrderDetails: {
-				OrderNumber: purchase.orderNumber,
-				Amount:purchase.amount,
-				CurrencyCode: purchase.currency_code,
-				OrderDescription:purchase.OrderDescription,
+				OrderNumber: purchase.OrderDetails.OrderNumber,
+				Amount:purchase.OrderDetails.Amount,
+				CurrencyCode: purchase.Account.CardCode,
+				OrderDescription:purchase.OrderDetails.OrderDescription,
 				OrderChannel:"S"
 
 			},
@@ -213,7 +240,8 @@ OrderDetails
 			    jwt: document.getElementById("JWTContainer").value,
 				order: orderObject
 			});
-
+			var accountNumber = 
+			Cardinal.trigger("bin.process", accountNumber);
 	
 		}
 	</script>

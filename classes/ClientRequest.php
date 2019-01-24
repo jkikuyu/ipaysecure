@@ -8,14 +8,14 @@ namespace IpaySecure;
 
 	class ClientRequest{
 	private $reference_Code;
-	private $first_Name ;
-	private $last_Name;
+	private $firstName ;
+	private $lastName;
 	private $street ;
 	private $city;
 	private $email;
-	private $account_Number;
-	private $expiration_Month;
-	private $expiration_Year ;
+	private $accountNumber;
+	private $expirationMonth;
+	private $expirationYear ;
 	private $currency ;
 	private $amount;
 	private $cardType;
@@ -23,14 +23,14 @@ namespace IpaySecure;
     function __construct(){
       	// Test credentials
     	$this->order_id = 'A12356789';
-		$this->first_Name = 'John';
-		$this->last_Name = 'Doe';
+		$this->firstName = 'John';
+		$this->lastName = 'Doe';
 		$this->street  =  '';
 		$this->city='Nairobi';
 		$this->email = "abc@test.com";
 		$this->account_Number='	4000000000000002';
-		$this->expiration_Month='12';
-		$this->expiration_Year = '2019';
+		$this->expirationMonth='12';
+		$this->expirationYear = '2019';
 		$this->currency = 'KES';
 		$this->amount = '290.00';
      }
@@ -52,17 +52,17 @@ namespace IpaySecure;
 		$request['ccAuthService_run'] = 'true';
 		$request['card_cardType']= $this->cardType;
 		$request['merchantReferenceCode'] = $this->order_id;
-		$request['billTo_firstName'] = $this->first_Name;
-		$request['billTo_lastName']  = $this->last_Name;
+		$request['billTo_firstName'] = $this->firstName;
+		$request['billTo_lastName']  = $this->lastName;
 		$request['billTo_street1']   = $this->street;
 		$request['billTo_city'] 	=  $this->city;
 		$request['billTo_state'] = '';
 		$request['billTo_postalCode'] = '';
 		$request['billTo_country'] = 'KE';
 		$request['billTo_email'] = $this->email;
-		$request['card_accountNumber'] = $this->account_Number;
-		$request['card_expirationMonth'] = $this->expiration_Month;
-		$request['card_expirationYear'] = $this->expiration_Year;
+		$request['card_accountNumber'] = $this->accountNumber;
+		$request['card_expirationMonth'] = $this->expirationMonth;
+		$request['card_expirationYear'] = $this->expirationYear;
 		$request['purchaseTotals_currency'] =$this->currency;
 		$request['item_0_unitPrice'] = $this->amount;
 		if($cca !== null){
@@ -118,17 +118,17 @@ namespace IpaySecure;
 	public function setCardDetails($cardDetails){
 		//echo "last name". $cardDetails->last_Name;
 		
-		$this->order_id = $cardDetails->orderNumber;
-		$this->first_Name = $cardDetails->first_Name;
-		$this->last_Name = $cardDetails->last_Name;
+		$this->order_id = $cardDetails->OrderDetails->OrderNumber;
+		$this->first_Name = $cardDetails->BillingAddress->FirstName;
+		$this->last_Name = $cardDetails->BillingAddress->LastName;
 		$this->street  =  $cardDetails->street;
 		$this->city=$cardDetails->city;
 		$this->email = $cardDetails->email;
-		$this->account_Number=$cardDetails->account_number;
-		$this->expiration_Month=$cardDetails->card_expiration_month;
-		$this->expiration_Year = $cardDetails->card_expiration_year;
+		$this->accountNumber=$cardDetails->Account->AccountNumber;
+		$this->expirationMonth=$cardDetails->Account->ExpirationMonth;
+		$this->expirationYear = $cardDetails->Account->ExpirationYear;
 		$this->cardType = $cardDetails->cardType;
-		$this->amount = $cardDetails->amount;
+		$this->amount = $cardDetails->OrderDetails->Amount;
 		$arr =include('iso_4217_currency_codes.php');
 			foreach ($arr as $currency => $code) {
 			 if ($code === $cardDetails->currency_code){
