@@ -7,7 +7,7 @@ namespace IpaySecure;
 	require_once('classesAutoload.php');
 
 	class ClientRequest{
-	private $reference_Code;
+	private $referenceID;
 	private $firstName ;
 	private $lastName;
 	private $street ;
@@ -20,21 +20,7 @@ namespace IpaySecure;
 	private $amount;
 	private $cardType;
 
-    function __construct(){
-      	// Test credentials
-    	$this->order_id = 'A12356789';
-		$this->firstName = 'John';
-		$this->lastName = 'Doe';
-		$this->street  =  '';
-		$this->city='Nairobi';
-		$this->email = "abc@test.com";
-		$this->account_Number='	4000000000000002';
-		$this->expirationMonth='12';
-		$this->expirationYear = '2019';
-		$this->currency = 'KES';
-		$this->amount = '290.00';
-     }
-     public function makeRequest($cardDetails){
+     public function payerAuthEnrollService($cardDetails){
      	self::setCardDetails($cardDetails);
 		 	  
      //	$this->validCard($cardDetails);
@@ -66,36 +52,6 @@ namespace IpaySecure;
 		$request['purchaseTotals_currency'] =$this->currency;
 		$request['item_0_unitPrice'] = $this->amount;
 		if($cca !== null){
-			//var_dump($cca);
-			// include authentication request
-			/**
-				
-				{
-					  "Validated": true,
-					  "ErrorNumber": 0,
-					  "ErrorDescription": "Success",
-					  "ActionCode": "SUCCESS",
-					  "Payment": {
-					    "Type": "CCA",
-					    "ExtendedData": {
-					      "CAVV": "jELUbgG+Tfj0AREACMLdCae+oIs=",
-					      "ECIFlag": "02",
-					      "XID": "TTdENWJjVngxVHF0YUJlQUcxbjA=",
-					      "UCAFIndicator": "2",
-					      "Enrolled": "Y",
-					      "PAResStatus": "Y",
-					      "SignatureVerification": "Y"
-					    },
-					    "ProcessorTransactionId": "M7D5bcVx1TqtaBeAG1n0"
-					  }
-} 
-		
-			$request['ccAuthService_cavv'] = $cca->CAVV;
-			$request['ccAuthService_commerceIndicator']=$cca->ccAuthService_commerceIndicator;
-			$request['ccAuthService_xid'] = $cca->XID;
-			$request['ccAuthService_veresEnrolled'] = $cca->Enrolled;
-			$request['ccAuthService_paresStatus']=$cca->PAResStatus;
-		**/
 		}
 
 
@@ -115,20 +71,9 @@ namespace IpaySecure;
 		print_r($arr);
 		echo '</pre>';
 	}
-	public function setCardDetails($cardDetails){
+	public function setAuthEnrollDetails($cardDetails){
 		//echo "last name". $cardDetails->last_Name;
-		
-		$this->order_id = $cardDetails->OrderDetails->OrderNumber;
-		$this->first_Name = $cardDetails->BillingAddress->FirstName;
-		$this->last_Name = $cardDetails->BillingAddress->LastName;
-		$this->street  =  $cardDetails->street;
-		$this->city=$cardDetails->city;
-		$this->email = $cardDetails->email;
-		$this->accountNumber=$cardDetails->Account->AccountNumber;
-		$this->expirationMonth=$cardDetails->Account->ExpirationMonth;
-		$this->expirationYear = $cardDetails->Account->ExpirationYear;
-		$this->cardType = $cardDetails->cardType;
-		$this->amount = $cardDetails->OrderDetails->Amount;
+		$this->referenceID = $cardDetails->referenceId;
 		$arr =include('iso_4217_currency_codes.php');
 			foreach ($arr as $currency => $code) {
 			 if ($code === $cardDetails->currency_code){
@@ -136,6 +81,19 @@ namespace IpaySecure;
 			 	break;
 			}
 		}
+		$this->amount = $cardDetails->OrderDetails->Amount;
+		$this->accountNumber=$cardDetails->Account->AccountNumber;
+		$this->expirationMonth=$cardDetails->Account->ExpirationMonth;
+		$this->expirationYear = $cardDetails->Account->ExpirationYear;
+		$this->cardType = $cardDetails->cardType;
+		$this->merchantID=$merchantId;
+		$this->order_id = $cardDetails->OrderDetails->OrderNumber;
+/*		$this->first_Name = $cardDetails->BillingAddress->FirstName;
+		$this->last_Name = $cardDetails->BillingAddress->LastName;
+		$this->street  =  $cardDetails->street;
+		$this->city=$cardDetails->city;
+		$this->email = $cardDetails->email;
+*/
 
 	}
 

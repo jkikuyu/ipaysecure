@@ -28,46 +28,75 @@
 
 
         public function initInput($recd_data = null){
-            $required_params = [
+            $required_params_primary = [
 				'cardType',
-                'transactionId',
-                'orderNumber',
-                'orderDescription',
-                'currency_code',
-                'first_Name',
-                'last_Name',
-                'email',                
-                'city',
-                'street',
-                'account_number',
-                'card_expiration_month',
-                "card_expiration_year",
-                "card_cvv",
-                "amount"
+                'street'
             ];
+			$required_params_order=[
+				'OrderNumber',
+				'Amount',
+                'OrderDescription',
+                'TransactionId',
+                'CurrencyCode'
+
+			];
+			$required_params_address =[          
+				'FirstName',
+                'LastName',
+                'City'
+			];
+			$required_params_consumer =['Email1'];
+	
+	        $required_params_account=[
+				'AccountNumber',
+                'ExpirationMonth',
+                'ExpirationYear',
+                'CardCode'
+			 ];
+				
             try{
                 if(empty($recd_data)){
                     throw new \InvalidArgumentException('POST JSON cannot be empty');
                 }
-                $isValid = Utils::validatePhpInput($recd_data, $required_params);
+				$order = $recd_data->OrderDetails;
+				//var_dump($order);
+				$consumer=$recd_data->Consumer;
+				$address = $consumer->BillingAddress;
+				$account = $recd_data->Account;
+				//validate primary details
+				
+                $isValid = Utils::validatePhpInput($recd_data, $required_params_primary);
+				//validate order
+				$isValid = Utils::validatePhpInput($order, $required_params_order);
+				//valid address
+				$isValid = Utils::validatePhpInput($consumer, $required_params_consumer);
+				//valid consumer
+				$isValid = Utils::validatePhpInput($address, $required_params_address);
+				//valid account
+				$isValid = Utils::validatePhpInput($account, $required_params_account);
+
+	
                 if($isValid){
-                    $this->transactionId = $recd_data->transactionId;
-                    $this->orderId = $recd_data->orderNumber;
-                    $this->orderDescription = $recd_data->orderDescription;
+					//primary
+					$this->street = $recd_data->street;
 					
-                    $this->currencycode = $recd_data->currency_code;
-                    $this->first_Name = $recd_data->first_Name;
-                    $this->last_Name = $recd_data->last_Name;
-                    $this->email = $recd_data->email;
-                    $this->account_number = $recd_data->account_number;
-                    $this->city = $recd_data->city;
-                    $this->street = $recd_data->street;
-                    $this->amount = $recd_data->amount;
-                    $this->account_number = $recd_data->account_number;
-                    $this->expiration_month = $recd_data->card_expiration_month;
-                    $this->expiration_year =  $recd_data->card_expiration_year;
-                    $this->cvv =  $recd_data->card_cvv;
-					$this->cardType = $recd_data->cardType;
+					// Order details
+                    $this->transactionId = $order->TransactionId;
+                    $this->orderId = $order->OrderNumber;
+                    $this->orderDescription = $order->OrderDescription;
+					$this->amount = $order->Amount;
+                    $this->currencycode = $order->CurrencyCode;
+					// consumer email
+                    $this->email = $consumer->Email1;
+					// address
+					$this->firstName = $address->FirstName;
+                    $this->lastName = $address->LastName;
+					$this->city = $address->City;
+					// account 
+                    $this->account_number = $account->AccountNumber;
+                    $this->expiration_month = $account->ExpirationMonth;
+                    $this->expiration_year =  $account->ExpirationYear;
+                    $this->cvv =  $account->CardCode;
                 }
                 else{
                     return $res;

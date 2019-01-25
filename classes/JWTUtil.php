@@ -39,7 +39,7 @@
          * https://cardinaldocs.atlassian.net/wiki/spaces/CC/pages/196850/JWT+Creation
          *
         **/
-        function generateJwt($orderTransactionId, $orderObjec, referenceId){
+        function generateJwt($orderTransactionId, $orderObject, $referenceId){
             $currentTime = time();
             $expireTime = 3600; // expiration in seconds - this equals 1hr
             $token = (new Builder())->setId($orderTransactionId, true) // The Transaction Id (jti claim)
@@ -50,8 +50,9 @@
 
                         ->set('OrgUnitId',   $this->orgUnit_Id) // Configures a new claim, called "OrgUnitId"
                        // ->set('ObjectifyPayload', true)
-                        ->sign(new Sha256(),  $this->api_Key) // Sign with API Key
-				   		->set('ReferenceId', referenceId) // Configures a new claim, called "OrgUnitId"
+				   		->set('ReferenceId', $referenceId) // Configures a new claim, called "referenceId"
+                        
+						->sign(new Sha256(),  $this->api_Key) // Sign with API Key
                         ->getToken(); // Retrieves the generated token
          
             return $token; // The JWT String

@@ -14,7 +14,7 @@ if(isset($jsonData)){
 	echo $jsonData;
 	$recd_data = json_decode($jsonData);
 	if($recd_data->Payment->Type =='CCA'){
-		$req->makeRequest($recd_data);
+		$req->payerAuthEnrollService($recd_data);
 	}
 	else{
 	}
