@@ -35,9 +35,20 @@ namespace IpaySecure;
 
 		 echo "bill to :". $this->last_Name;
 		$request = array();
-		$request['ccAuthService_run'] = 'true';
+		$request['referenceID'] = $this->referenceID;
+		$request['purchaseTotals_currency'] = $this->currency;
+		$request['purchaseTotals_grandTotalAmount']=$this->amount;
+		$request['card_accountNumber'] = $this->accountNumber;
+		$request['card_expirationMonth'] = $this->expirationMonth;
+		$request['card_expirationYear'] = $this->expirationYear;
+		$request['purchaseTotals_currency'] =$this->currency;
 		$request['card_cardType']= $this->cardType;
+		$request['merchantID'] = $this->referenceID;
+		$request['ccAuthService_run'] = 'true';
 		$request['merchantReferenceCode'] = $this->order_id;
+/*
+		$request['item_0_unitPrice'] = $this->amount;
+
 		$request['billTo_firstName'] = $this->firstName;
 		$request['billTo_lastName']  = $this->lastName;
 		$request['billTo_street1']   = $this->street;
@@ -45,12 +56,8 @@ namespace IpaySecure;
 		$request['billTo_state'] = '';
 		$request['billTo_postalCode'] = '';
 		$request['billTo_country'] = 'KE';
+*/
 		$request['billTo_email'] = $this->email;
-		$request['card_accountNumber'] = $this->accountNumber;
-		$request['card_expirationMonth'] = $this->expirationMonth;
-		$request['card_expirationYear'] = $this->expirationYear;
-		$request['purchaseTotals_currency'] =$this->currency;
-		$request['item_0_unitPrice'] = $this->amount;
 		if($cca !== null){
 		}
 
