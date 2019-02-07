@@ -4,116 +4,118 @@
 **/
 
 namespace IpaySecure;
-	require_once('classesAutoload.php');
 
-	class ClientRequest{
+
+class ClientRequest{
 	private $referenceID;
-	private $firstName ;
-	private $lastName;
-	private $street ;
-	private $city;
-	private $email;
 	private $accountNumber;
 	private $expirationMonth;
 	private $expirationYear ;
 	private $currency ;
 	private $amount;
 	private $cardType;
-
-     public function payerAuthEnrollService($cardDetails){
-     	self::setCardDetails($cardDetails);
-		 	  
-     //	$this->validCard($cardDetails);
-		 $tag = 'ipaysecure';
+	private $merchantId;
+	private $transactionkey;
+	private $request;
+	function __construct(){
+		$tag = 'ipaysecure';
 		Utils::getLogFile($tag);
-		$merchantId = getenv('MERCHANT_ID');
-		$transactionkey = getenv('TRANSACTION_KEY');
-		$options = [$merchantId,$transactionkey];
 
-		$client = new \CybsNameValuePairClient($options);
+		$this->merchantId = getenv('MERCHANT_ID');
+		$this->transactionkey = getenv('TRANSACTION_KEY');
+		$this->paymentSolution=getenv('PAYMENTSOLUTION');
+
+	}
+
+	 public function payerAuthEnrollService($cardDetails){
+		$this->request = array();
+
+		$this->request['referenceID'] = $cardDetails->referenceId;
+		$this->request['payerAuthEnrollService_run'] = 'true';
+		
+		$this->request['card_expirationMonth'] = $cardDetails->Account->ExpirationMonth;
+		$this->request['card_expirationYear'] = $cardDetails->Account->ExpirationYear;
+		$this->request['card_cardType']=  $cardDetails->cardType;
+		$this->request['card_accountNumber'] = $cardDetails->Account->AccountNumber;
 
 
-		 echo "bill to :". $this->last_Name;
-		$request = array();
-		$request['referenceID'] = $this->referenceID;
-		$request['purchaseTotals_currency'] = $this->currency;
-		$request['purchaseTotals_grandTotalAmount']=$this->amount;
-		$request['card_accountNumber'] = $this->accountNumber;
-		$request['card_expirationMonth'] = $this->expirationMonth;
-		$request['card_expirationYear'] = $this->expirationYear;
-		$request['purchaseTotals_currency'] =$this->currency;
-		$request['card_cardType']= $this->cardType;
-		$request['merchantID'] = $this->referenceID;
-		$request['ccAuthService_run'] = 'true';
-		$request['merchantReferenceCode'] = $this->order_id;
-/*
-		$request['item_0_unitPrice'] = $this->amount;
+		$res = self::makeRequest($cardDetails);
+		return $res;
+	}
 
-		$request['billTo_firstName'] = $this->firstName;
-		$request['billTo_lastName']  = $this->lastName;
-		$request['billTo_street1']   = $this->street;
-		$request['billTo_city'] 	=  $this->city;
-		$request['billTo_state'] = '';
-		$request['billTo_postalCode'] = '';
-		$request['billTo_country'] = 'KE';
-*/
-		$request['billTo_email'] = $this->email;
-		if($cca !== null){
+
+	public function payerAuthValidateService($cardDetails){
+		$this->request = array();
+
+		$this->request['payerAuthValidateService_authenticationTransactionID'] = $cardDetails->Payment->ProcessorTransactionId;
+		$this->request['payerAuthValidateService_run'] = 'true';
+		$this->request['ccAuthService_run'] = 'true';
+		$this->request['vc_orderID'] = $cardDetails->OrderDetails->OrderNumber;
+
+		$this->request['card_expirationMonth'] = $cardDetails->Account->ExpirationMonth;
+		$this->request['card_expirationYear'] = $cardDetails->Account->ExpirationYear;
+		$this->request['card_cardType']=  $cardDetails->cardType;
+		$this->request['card_accountNumber'] = $cardDetails->Account->AccountNumber;
+		$this->request['billTo_firstName'] = $cardDetails->Consumer->BillingAddress->FirstName;
+		$this->request['billTo_lastName']  = $cardDetails->Consumer->BillingAddress->LastName;
+		$this->request['billTo_email'] = $cardDetails->Consumer->Email1;
+		$this->request['billTo_street1']   = $cardDetails->Consumer->BillingAddress->Address1;
+		$this->request['billTo_country'] = $cardDetails->Consumer->BillingAddress->CountryCode;
+
+		$this->request['billTo_city'] 	=  $cardDetails->Consumer->BillingAddress->City;
+		if($cardDetails->cardType=="002"){
+			$this->request['card_cardType'] = $cardDetails->cardType;
 		}
 
 
-		//$request['item_0_unitPrice'] = '12.34';
-		//$request['item_1_unitPrice'] = '56.78';
+		$res = self::makeRequest($cardDetails);
 
-		//$request['item_1_unitPrice'] = '56.78';
-		$reply = $client->runTransaction($request);
-
-		// This section will show all the reply fields.
-		
-		echo '<pre>';
-		print("\nRESPONSE:\n" . $reply);
-		preg_match_all("/ ([^:=]+) [:=]+ ([^\\n]+) /x",  $reply, $p);
-		$arr = array_combine($p[1], $p[2]);
-		//$arr = explode("=",  $reply);
-		print_r($arr);
-		echo '</pre>';
+		return $res;
 	}
-	public function setAuthEnrollDetails($cardDetails){
-		//echo "last name". $cardDetails->last_Name;
-		$this->referenceID = $cardDetails->referenceId;
-		$arr =include('iso_4217_currency_codes.php');
-			foreach ($arr as $currency => $code) {
-			 if ($code === $cardDetails->currency_code){
+	public function authorizeOnline($cardDetails){
+		$this->request = array();
+		$this->request['paymentSolution']=$this->paymentSolution;
+		$this->request['vc_orderID'] = $cardDetails->OrderDetails->OrderNumber;
+		$res = self::makeRequest($cardDetails);
+
+	return $res;
+	}
+
+	public function makeRequest($cardDetails){
+		self::getCurrency($cardDetails);
+
+		$options = [$this->merchantId,$this->transactionkey];
+
+		$this->request['purchaseTotals_grandTotalAmount']=$cardDetails->OrderDetails->Amount/100;
+		$this->request['purchaseTotals_currency'] =$cardDetails->OrderDetails->CurrencyCode;
+		$this->request['merchantID'] = $this->merchantId;
+		$this->request['merchantReferenceCode'] = $cardDetails->OrderDetails->OrderNumber;		
+		$client = new \CybsNameValuePairClient($options);
+		 $jsonStr= json_encode($cardDetails);
+		Utils::infoMsg($jsonStr);
+		Utils::infoMsg("\n---------------------------------------------------------\n");
+
+		$res = $client->runTransaction($this->request);
+		$info = $client->__getLastRequest();
+		Utils::infoMsg($info);
+		Utils::infoMsg("response :". $res);
+		Utils::infoMsg("\n---------------------------------------------------------\n");
+
+ 
+		return $res;
+
+	}
+	private function getCurrency($cardDetails){
+		$arr =include('classes/iso_4217_currency_codes.php');
+
+		foreach ($arr as $currency => $code) {
+			 if ($code[1] ===$cardDetails->OrderDetails->CurrencyCode){
 			 	$this->currency =$currency;
 			 	break;
 			}
 		}
-		$this->amount = $cardDetails->OrderDetails->Amount;
-		$this->accountNumber=$cardDetails->Account->AccountNumber;
-		$this->expirationMonth=$cardDetails->Account->ExpirationMonth;
-		$this->expirationYear = $cardDetails->Account->ExpirationYear;
-		$this->cardType = $cardDetails->cardType;
-		$this->merchantID=$merchantId;
-		$this->order_id = $cardDetails->OrderDetails->OrderNumber;
-/*		$this->first_Name = $cardDetails->BillingAddress->FirstName;
-		$this->last_Name = $cardDetails->BillingAddress->LastName;
-		$this->street  =  $cardDetails->street;
-		$this->city=$cardDetails->city;
-		$this->email = $cardDetails->email;
-*/
 
 	}
 
-	function validCard($required){
-		foreach ($required as $key => $value) {
-			if (empty($value)) {
-                throw new Exception(strtolower(str_replace('_',' ',$key)) . ' is missing and is a required.');
-            }
-            else{
-            	$this->$key = $value;
-            }
-
-        }
-	}
 }
 ?>

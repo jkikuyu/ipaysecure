@@ -29,8 +29,7 @@
 
         public function initInput($recd_data = null){
             $required_params_primary = [
-				'cardType',
-                'street'
+				'cardType'
             ];
 			$required_params_order=[
 				'OrderNumber',
@@ -40,12 +39,6 @@
                 'CurrencyCode'
 
 			];
-			$required_params_address =[          
-				'FirstName',
-                'LastName',
-                'City'
-			];
-			$required_params_consumer =['Email1'];
 	
 	        $required_params_account=[
 				'AccountNumber',
@@ -69,16 +62,12 @@
 				//validate order
 				$isValid = Utils::validatePhpInput($order, $required_params_order);
 				//valid address
-				$isValid = Utils::validatePhpInput($consumer, $required_params_consumer);
-				//valid consumer
-				$isValid = Utils::validatePhpInput($address, $required_params_address);
 				//valid account
 				$isValid = Utils::validatePhpInput($account, $required_params_account);
 
 	
                 if($isValid){
 					//primary
-					$this->street = $recd_data->street;
 					
 					// Order details
                     $this->transactionId = $order->TransactionId;
@@ -116,11 +105,6 @@
                 'transactionId'=>$this->transactionId,
                 'orderNumber'=> $this->orderId,
                 'currency_code'=>$this->currencycode,
-                'first_Name' => $this->first_Name,
-                'last_Name'=> $this->last_Name,
-                'email'=>$this->email ,                
-                'city'=>$this->city,
-                'street'=>$this->street,
                 'account_number'=>$this->account_number,
                 'expiration_month'=>$this->expiration_month ,
                 "expiration_year" =>$this->expiration_year,

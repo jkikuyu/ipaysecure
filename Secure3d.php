@@ -1,10 +1,12 @@
 <?php
 	namespace IpaySecure;
 	use IpaySecure\JWTUtil;
-	use IpaySecure\ClientRequest;
-	use IpaySecure\Transaction;
-	//use IpaySecure\Utils;
+
+	use IpaySecure\Utils;
 	require_once('classesAutoload.php');
+//	require_once('classes/JWTUtil.php');
+//	require_once('classes/Utils.php');
+
 
 
 	error_reporting(E_ALL);
@@ -33,7 +35,8 @@
 	//use IpaySecure\Secure3d\ClientRequest;
 
 
-	$transaction = new Transaction();
+
+	$orderNo =  mt_rand(100000, 999999);
 	$jsonData = file_get_contents('php://input');
 	$recd_data = '';
 	//echo $jsonData;
@@ -43,10 +46,10 @@
 			"cardType":"001",
 			"street":"Sifa Towers, Lenana Rd",
 			"OrderDetails":{
-				"OrderNumber":"1234567890",
+				"OrderNumber":"'.$orderNo. '",
 				"OrderDescription":"test Description", 
-				"Amount":"30000",
-				"CurrencyCode":"404",
+				"Amount":"300",
+				"CurrencyCode":"KES",
 				"OrderChannel":"M",
 				"TransactionId":"'.uniqid().'"
 			},
@@ -58,188 +61,165 @@
 					"LastName":"Doe",
 					"Address1":"sdfdfdfddfddf",
 					"City":"Nairobi",
+					"CountryCode":"KE",
 					"Phone1":"3234455"
 				}
 			},
+
 			"Account":{
-				"AccountNumber":"4000000000000002",
+				"AccountNumber":"4000000000000119",
 				"CardCode":"366",
 				"ExpirationMonth":"12",
 				"ExpirationYear":"2019"
 			}
 
 
+
 		}';
+/*				"Consumer":{
+				"Email1":"abc@test.com",
+				"BillingAddress":{
+					"FirstName":"John",
+					"MiddleName":"C",
+					"LastName":"Doe",
+					"Address1":"sdfdfdfddfddf",
+					"City":"Nairobi",
+					"Phone1":"3234455"
+				}
+			},
+*/
 		}
-	
 	$recd_data = json_decode($jsonData);
-	
-	$transaction->initInput($recd_data);
-	$_SESSION['recd_data'] = $recd_data;
-	$transactionInfo = $transaction->getTransactionInfo();
 	$referenceId = uniqid();
-	$aref = ["refenceId"=>$referenceId];
-	$jsonData = json_encode(array_merge(json_decode($json_data,true),$aref));
+	$aref = ["referenceId"=>$referenceId];
+	$jsonData = json_encode(array_merge(json_decode($jsonData,true),$aref));
 
 	$jwtUtil = new JWTUtil();
-	$jwt = $jwtUtil->generateJwt($transactionInfo->transactionId, $transactionInfo->orderNumber, $referenceId);
+	$jwt = $jwtUtil->generateJwt($recd_data->OrderDetails->TransactionId, $recd_data->OrderDetails, $referenceId);
+	echo "test";
 ?>
 <!--https://cardinaldocs.atlassian.net/wiki/spaces/CC/pages/557065/Songbird.js#Songbird.js-Events -->
 <!--Production URL: https://songbirdstag.cardinalcommerce.com/edge/v1/songbird.js -->
 <!--Staging URL: https://songbirdstag.cardinalcommerce.com/edge/v1/songbird.js -->
 
 <!--Sandbox URL: https://utilsbox.cardinalcommerce.com/cardinalcruise/v1/songbird.js -->
-	<script src="https://includestest.ccdc02.com/cardinalcruise/v1/songbird.js"></script>
+	<script src="https://songbirdstag.cardinalcommerce.com/cardinalcruise/v1/songbird.js"></script>
+
 	<!--script src="https://includestest.ccdc02.com/cardinalcruise/v1/songbird.js"></script>-->
 	<script src="https://code.jquery.com/jquery-3.3.0.js"></script>
 	<script>
-			var purchase = <?php echo $jsonData; ?>;
-			console.log(purchase)
-			var orderObject = {
-			  Consumer: {
-				Account: {
-				  AccountNumber: purchase.Account.AccountNumber
-				}
-			  }
-			};
+		var purchase = <?php echo $jsonData; ?>;
+		//console.log(purchase);
+		var enrollobj = "";
 
-			$(document).ready(function(){
-				  initCCA();
-			});		
+
+		var orderObject = {
+		  Consumer: {
+			Account: {
+			  AccountNumber: purchase.Account.AccountNumber
+			}
+		  }
+		};
+
+		$(document).ready(function(){
+			  initCCA();
+		});		
+/*
+		fetch("CardAuthEnrollService.php", {
+			method: "POST", // *GET, POST, PUT, DELETE, etc.
+
+			body: JSON.stringify(purchase), // body data type must match "Content-Type" header
+		})
+		.then(r =>  r.json())
+		.then(data => 	bin_process(data))
+		.catch(error => console.log(error));
+*/
+
+		Cardinal.on('payments.setupComplete', function(setupCompleteData){
+			console.log(JSON.stringify(setupCompleteData));
+
+		});	
+		Cardinal.on("payments.validated", function (vcard, jwt) {
+			
+		//Listen for Events
+	    switch(vcard.ActionCode){
+
+	      case "SUCCESS":
+	      		console.log ("dataxxxxxxxxxxxxxx :"+JSON.stringify(vcard));
+				var result = {...purchase,
+                              ...vcard
+
+                             };
+				console.log(result);
+			fetch("CardValidateService.php", {
+				method: "POST", // *GET, POST, PUT, DELETE, etc.
+
+				body: JSON.stringify(result), // body data type must match "Content-Type" header
+			})
+			.then(r =>  r.json())
+			.then(data => validComplete(data));
+
+
+		  break;
+
+		  case "NOACTION":
+			alert('NOACTION');
+
+		  // Handle no actionable outcome
+		  break;
+
+		  case "FAILURE":
+			 alert('FAILURE');
+
+		  // Handle failed transaction attempt
+		  break;
+
+		  case "ERROR":
+			 alert('ERROR:' +data.ErrorDescription);
+
+		  // Handle service level error
+		  break;
+	  }
+		});
+
+				
+		function bin_process(data){
+			//transactionId = data.payerAuthEnrollReply_authenticationTransactionID;
 			Cardinal.trigger("bin.process", purchase.Account.AccountNumber)
 				.then(function(results){
+
 				if(results.Status) {
 					// Bin profiling was successful. Some merchants may want to only move forward with CCA if profiling was successful
-					//$.extend(result, purchase, vcard);
-					fetch("CardAuthEnrollService.php", {
-						method: "POST", // *GET, POST, PUT, DELETE, etc.
-
-						body: JSON.stringify(purchase), // body data type must match "Content-Type" header
-					})
-				.then(response => {
-					console.log(response.json())}); // parses response to JSON
-
 
 				} else {
 					// Bin profiling failed
 				}
-
-				// Bin profiling, if this is the card the end user is paying with you may start the CCA flow at this point
+				console.log(results.Status);
+				card_continue(data);
+			// Bin profiling, if this is the card the end user is paying with you may start the CCA flow at this point
 				//Cardinal.start('cca', myOrderObject);
 			  })
 			  .catch(function(error){
+			  	console.log(error);
 				// An error occurred during profiling
 			  })			
-		
-					//Listen for Events
-		    Cardinal.on('payments.setupComplete', function(setupCompleteData){
-		    	console.log(JSON.stringify(setupCompleteData));
 
-				//alert ("Init done");
-				card_start();
-			});	
-			Cardinal.on("payments.validated", function (vcard, jwt) {
-				
-			//console.log(JSON.stringify(data,null, 2));
-		    switch(vcard.ActionCode){
-		      case "SUCCESS":
-				var result={};
-		      	console.log('validated result ....................');
-					
-		      	console.log ("dataxxxxxxxxxxxxxx :"+JSON.stringify(vcard));
-				
+		}
+		function valid_complete(validobj){
 
-					  break;
-
-					  case "NOACTION":
-						alert('NOACTION');
-
-					  // Handle no actionable outcome
-					  break;
-
-					  case "FAILURE":
-						 alert('FAILURE');
-
-					  // Handle failed transaction attempt
-					  break;
-
-					  case "ERROR":
-						 alert('ERROR:' +data.ErrorDescription);
-
-					  // Handle service level error
-					  break;
-				  }
-			});
-		
-		function card_start(){
-			//alert ("starting");
-			//alert (purchase.amount);
-			//Order channel:     M – MOTO (Mail Order Telephone Order), R – Retail
-    		//S – eCommerce ,P – Mobile Device,  T – Tablet
-
-			Cardinal.start("cca", { 
-			  OrderDetails: {
-				OrderNumber: purchase.OrderDetails.OrderNumber,
-				Amount:purchase.OrderDetails.Amount,
-				CurrencyCode: purchase.Account.CardCode,
-				OrderDescription:purchase.OrderDetails.OrderDescription,
-				OrderChannel:purchase.OrderDetails.OrderChannel
+		}
+		function card_continue(enrollobj){
+			Cardinal.continue("cca", { 
+				"AcsUrl":enrollobj.payerAuthEnrollReply_acsURL,
+				"Payload":enrollobj.payerAuthEnrollReply_paReq,
 
 			},
-			Consumer: {
-				Email1:purchase.Consumer.Email1,
-				Account:{
-				AccountNumber: purchase.Account.AccountNumber,
-				ExpirationMonth: purchase.Account.ExpirationMonth,
-				ExpirationYear: purchase.Account.ExpirationYear
-				}
+			{
+			 "OrderDetails":{
+				"TransactionId":enrollobj.payerAuthEnrollReply_authenticationTransactionID
 			}
-
 			});
 		}
-
-	/*		Cardinal.start("cca", {
-		Email1: "joe@abc.com",
-
-		OrderDetails: {
-		    OrderNumber: "1234567890",
-		    Amount:"1500",
-		    CurrencyCode: "404",
-		    OrderDescription:"test description",
-		    OrderChannel:"M"
-
-		},
-		Consumer: {
-		    Email1: "joe@abc.com",
-		    ShippingAddress:{
-		    	FirstName:"John",
-		    	MiddleName:"C",
-		    	LastName:"Doe",
-		    	Address1:"sdfdfdfddfddf",
-		    	City:"Nairobi",
-		    	Phone1:"3234455"
-		    },
-		    BillingAddress:{
-				FirstName:"John",
-		    	MiddleName:"C",
-		    	LastName:"Doe",
-		    	Address1:"sdfdfdfddfddf",
-		    	City:"Nairobi",
-		    	Phone1:"3234455"
-			},
-			Account:{
-		    AccountNumber: "123456789",
-		    ExpirationMonth: "12",
-		    ExpirationYear: "2019",
-			}
-		},
-OrderDetails
-
-    OrderNumber
-    Amount
-    CurrencyCode
-    OrderChannel
-*/	
 
 
 		function initCCA(){
@@ -249,11 +229,7 @@ OrderDetails
 			    jwt: document.getElementById("JWTContainer").value,
 				order: orderObject
 			});
-/*
-			var accountNumber = 
-			Cardinal.trigger("bin.process", purchase.Account.AccountNumber);
-*/
-	
+
 		}
 	</script>
 <input type="hidden" id="JWTContainer" value= "<?php echo $jwt;?>" />
