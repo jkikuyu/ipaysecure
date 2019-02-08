@@ -1,17 +1,18 @@
 <?php
 namespace IpaySecure;
+require_once('classesAutoload.php');
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 //session_start();
 
 $jsonData = file_get_contents('php://input');
-echo $jsonData;
+//echo $jsonData;
 $req = new ClientRequest();
 $json = "";
 if(isset($jsonData)){
 	echo $jsonData;
-	$recd_data = json_decode($jsonData);
+	$recd_data = json_decode($jsonData,true);
 	
 	$res = $req->payerAuthEnrollService($recd_data);
 	preg_match_all("/ ([^:=]+) [:=]+ ([^\\n]+) /x",  $res, $p);

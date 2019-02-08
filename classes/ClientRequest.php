@@ -28,15 +28,15 @@ class ClientRequest{
 	}
 
 	 public function payerAuthEnrollService($cardDetails){
+		 
 		$this->request = array();
-
-		$this->request['referenceID'] = $cardDetails->referenceId;
+		$this->request['referenceID'] = $cardDetails['referenceId'];
 		$this->request['payerAuthEnrollService_run'] = 'true';
 		
-		$this->request['card_expirationMonth'] = $cardDetails->Account->ExpirationMonth;
-		$this->request['card_expirationYear'] = $cardDetails->Account->ExpirationYear;
-		$this->request['card_cardType']=  $cardDetails->cardType;
-		$this->request['card_accountNumber'] = $cardDetails->Account->AccountNumber;
+		$this->request['card_expirationMonth'] = $cardDetails['ExpirationMonth'];
+		$this->request['card_expirationYear'] = $cardDetails['ExpirationYear'];
+		$this->request['card_cardType']=  $cardDetails['cardType'];
+		$this->request['card_accountNumber'] = $cardDetails['AccountNumber'];
 
 
 		$res = self::makeRequest($cardDetails);
@@ -82,16 +82,17 @@ class ClientRequest{
 	}
 
 	public function makeRequest($cardDetails){
-		self::getCurrency($cardDetails);
+		//self::getCurrency($cardDetails);
 
 		$options = [$this->merchantId,$this->transactionkey];
 
-		$this->request['purchaseTotals_grandTotalAmount']=$cardDetails->OrderDetails->Amount/100;
-		$this->request['purchaseTotals_currency'] =$cardDetails->OrderDetails->CurrencyCode;
+		$this->request['purchaseTotals_grandTotalAmount']=$cardDetails['Amount']/100;
+		$this->request['purchaseTotals_currency'] =$cardDetails['CurrencyCode'];
 		$this->request['merchantID'] = $this->merchantId;
-		$this->request['merchantReferenceCode'] = $cardDetails->OrderDetails->OrderNumber;		
+		$this->request['merchantReferenceCode'] = $cardDetails['OrderNumber'];		
 		$client = new \CybsNameValuePairClient($options);
-		 $jsonStr= json_encode($cardDetails);
+		$jsonStr= json_encode($cardDetails);
+		$jsonStr="";
 		Utils::infoMsg($jsonStr);
 		Utils::infoMsg("\n---------------------------------------------------------\n");
 
@@ -105,6 +106,7 @@ class ClientRequest{
 		return $res;
 
 	}
+/*
 	private function getCurrency($cardDetails){
 		$arr =include('classes/iso_4217_currency_codes.php');
 
@@ -116,6 +118,7 @@ class ClientRequest{
 		}
 
 	}
+*/
 
 }
 ?>

@@ -6,8 +6,11 @@
 namespace IpaySecure;
 
 use Dotenv\Dotenv;   
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
 final class Utils{
+    private static $log;
     public static function validatePhpInput($raw_input, array $required_params){
         $res = null;
         //var_dump($raw_input);
@@ -157,11 +160,11 @@ final class Utils{
     }
 
     }
-	public static function infoMsg($info){
+	public static function infoMsg($info=""){
 		self::$log->info($info);
 
 	}
-	public static function errMsg($error){
+	public static function errMsg($error=""){
 
 		self::$log->Error($error);
 
