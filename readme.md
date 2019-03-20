@@ -30,8 +30,52 @@ This is the documentation for integrating to the Cybersource 3d security feature
 | API_KEY     |Cardinal Cruise Javascript credential for use with songbird.js	      			      |            
 | LOGDIR      |Log file location	               				      			      |            
 
--Change the NVP_WSDL_URL to reflect current endpoint
--set ORGUNIT_ID, API_ID ,API_KEY to values provided for production
+- Change the NVP_WSDL_URL to reflect current endpoint
+- Set ORGUNIT_ID, API_ID ,API_KEY to values provided for production
+
+## Card Verification and Validation request
+A request with card details is forwarded to the endpoint in this format.
+~~~~
+	{
+	"cardType":"001",
+	"street":"Sifa Towers, Lenana Rd",
+	"OrderDetails":{
+		"OrderNumber":"123456789",
+		"OrderDescription":"Phone cover", 
+		"Amount":"1000",
+		"CurrencyCode":"KES",
+		"OrderChannel":"M",
+		"TransactionId":"'.uniqid().'"
+	},
+	"Consumer":{
+		"Email1":"abc@review.com",
+		"BillingAddress":{
+			"FirstName":"William",
+			"MiddleName":"C",
+			"LastName":"Paul",
+			"Address1":"Argwings Kodhek Rd",
+			"City":"Nairobi",
+			"CountryCode":"KE",
+			"Phone1":"722644550"
+		}
+	},
+
+	"Account":{
+		"AccountNumber":"4000000000000002",
+		"CardCode":"366",
+		"ExpirationMonth":"12",
+		"ExpirationYear":"2019"
+	}
+
+~~~~ 
+- Card type is either 001 - visa or 002 - mastercard  
+- Currency code is either USD or KES
+- Billing information is required during the validation process
+
+## Endpoint
+The endpoint to access shall be (ipaysecure/Secure3d.php)
+
+
 
 
 
