@@ -3,9 +3,9 @@
 	use IpaySecure\JWTUtil;
 
 	use IpaySecure\Utils;
-	require_once('classesAutoload.php');
-//	require_once('classes/JWTUtil.php');
-//	require_once('classes/Utils.php');
+	require_once('vendor/autoload.php');
+	require_once('classes/JWTUtil.php');
+	require_once('classes/Utils.php');
 
 
 
@@ -48,26 +48,26 @@
 			"OrderDetails":{
 				"OrderNumber":"'.$orderNo. '",
 				"OrderDescription":"test Description", 
-				"Amount":"300",
+				"Amount":"100",
 				"CurrencyCode":"KES",
 				"OrderChannel":"M",
 				"TransactionId":"'.uniqid().'"
 			},
 			"Consumer":{
-				"Email1":"abc@test.com",
+				"Email1":"abc@review.com",
 				"BillingAddress":{
-					"FirstName":"John",
+					"FirstName":"William",
 					"MiddleName":"C",
-					"LastName":"Doe",
-					"Address1":"sdfdfdfddfddf",
+					"LastName":"Paul",
+					"Address1":"Argwings Kodhek Rd",
 					"City":"Nairobi",
 					"CountryCode":"KE",
-					"Phone1":"3234455"
+					"Phone1":"722644550"
 				}
 			},
 
 			"Account":{
-				"AccountNumber":"4000000000000119",
+				"AccountNumber":"4000000000000002",
 				"CardCode":"366",
 				"ExpirationMonth":"12",
 				"ExpirationYear":"2019"
@@ -93,10 +93,9 @@
 	$referenceId = uniqid();
 	$aref = ["referenceId"=>$referenceId];
 	$jsonData = json_encode(array_merge(json_decode($jsonData,true),$aref));
-
+	$xid = "";
 	$jwtUtil = new JWTUtil();
 	$jwt = $jwtUtil->generateJwt($recd_data->OrderDetails->TransactionId, $recd_data->OrderDetails, $referenceId);
-	echo "test";
 ?>
 <!--https://cardinaldocs.atlassian.net/wiki/spaces/CC/pages/557065/Songbird.js#Songbird.js-Events -->
 <!--Production URL: https://songbirdstag.cardinalcommerce.com/edge/v1/songbird.js -->
@@ -111,7 +110,7 @@
 		var purchase = <?php echo $jsonData; ?>;
 		//console.log(purchase);
 		var enrollobj = "";
-
+		var transactionId = "";
 
 		var orderObject = {
 		  Consumer: {
@@ -124,7 +123,6 @@
 		$(document).ready(function(){
 			  initCCA();
 		});		
-/*
 		fetch("CardAuthEnrollService.php", {
 			method: "POST", // *GET, POST, PUT, DELETE, etc.
 
@@ -133,58 +131,62 @@
 		.then(r =>  r.json())
 		.then(data => 	bin_process(data))
 		.catch(error => console.log(error));
-*/
 
 		Cardinal.on('payments.setupComplete', function(setupCompleteData){
 			console.log(JSON.stringify(setupCompleteData));
 
 		});	
 		Cardinal.on("payments.validated", function (vcard, jwt) {
-			
+				console.log("here at payment validated............");
 		//Listen for Events
-	    switch(vcard.ActionCode){
+	    switch(vcard.ErrorNumber){
 
-	      case "SUCCESS":
+	      case 0:
 	      		console.log ("dataxxxxxxxxxxxxxx :"+JSON.stringify(vcard));
+	      		//console.log(transactionId);
+	      		xid = {"xid":transactionId};
+	      		//console.log(xid);
 				var result = {...purchase,
-                              ...vcard
+                              ...vcard,
+                              ...xid
 
                              };
-				console.log(result);
-			fetch("CardValidateService.php", {
-				method: "POST", // *GET, POST, PUT, DELETE, etc.
+				console.log("result:" + JSON.stringify(result));
+				fetch("CardValidateService.php", {
+					method: "POST", // *GET, POST, PUT, DELETE, etc.
 
-				body: JSON.stringify(result), // body data type must match "Content-Type" header
-			})
-			.then(r =>  r.json())
-			.then(data => validComplete(data));
+					body: JSON.stringify(result), // body data type must match "Content-Type" header
+				})
+				.then(r =>  r.json())
+				.then(data => validComplete(data));
 
 
 		  break;
 
-		  case "NOACTION":
+		  case 1:
 			alert('NOACTION');
 
 		  // Handle no actionable outcome
 		  break;
 
-		  case "FAILURE":
+		  case 2:
 			 alert('FAILURE');
 
 		  // Handle failed transaction attempt
 		  break;
 
-		  case "ERROR":
+		  case 3:
 			 alert('ERROR:' +data.ErrorDescription);
 
 		  // Handle service level error
 		  break;
+
 	  }
 		});
 
 				
 		function bin_process(data){
-			//transactionId = data.payerAuthEnrollReply_authenticationTransactionID;
+			transactionId = data.payerAuthEnrollReply_xid;
 			Cardinal.trigger("bin.process", purchase.Account.AccountNumber)
 				.then(function(results){
 

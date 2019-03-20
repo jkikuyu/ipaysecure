@@ -9,10 +9,10 @@
     use Firebase\JWT\JWT;
     use Dotenv\Dotenv;
 
-/*
+
         $dotenv = new Dotenv(__DIR__.'/secure');
         $dotenv->load();
-*/
+
 
     class JWTUtil {
 
@@ -27,7 +27,6 @@
             $this->orgUnit_Id = getenv('ORGUNIT_ID');
 
         }
-
 
         /*  $GLOBALS['ApiKey'] = '[INSERT_API_KEY_HERE]';
             $GLOBALS['ApiId'] = '[INSERT_API_KEY_ID_HERE]';

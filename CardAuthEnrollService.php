@@ -1,6 +1,9 @@
 <?php
 namespace IpaySecure;
-require_once('classesAutoload.php');
+require_once ('classes/ClientRequest.php');
+require_once ('classes/Utils.php');
+
+
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -11,9 +14,8 @@ $jsonData = file_get_contents('php://input');
 $req = new ClientRequest();
 $json = "";
 if(isset($jsonData)){
-	echo $jsonData;
-	$recd_data = json_decode($jsonData,true);
-	
+	//echo $jsonData;
+	$recd_data = json_decode($jsonData);
 	$res = $req->payerAuthEnrollService($recd_data);
 	preg_match_all("/ ([^:=]+) [:=]+ ([^\\n]+) /x",  $res, $p);
 	$keys = array_map('trim',$p[1]);
