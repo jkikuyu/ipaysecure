@@ -1,11 +1,14 @@
 <?php
-require_once('Secure3d.php');
+	namespace IpaySecure;
+
+	require_once('Secure3d.php');
 
 	$cardInfo = '{
 		"cardType":"001",
 		"street":"Sifa Towers, Lenana Rd",
+		"referenceId":"987654321",
 		"OrderDetails":{
-			"OrderNumber":"'.$orderNo. '",
+			"OrderNumber":"123456789",
 			"OrderDescription":"test Description", 
 			"Amount":"100",
 			"CurrencyCode":"KES",
@@ -34,7 +37,7 @@ require_once('Secure3d.php');
 
 	}';
 
-$sercure3d = new Secure3d($cardInfo);
+$secure3d = new Secure3d($cardInfo);
 $secure3d->processCard();
 
 ?>
