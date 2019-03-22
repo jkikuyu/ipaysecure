@@ -12,8 +12,12 @@ This is the documentation for integrating to the Cybersource 3d security feature
 | phpdotenv  |Loads environment variables from .env   							      |
 | JWT	     |A simple library to work with JSON Web Token and JSON Web Signature based on the RFC 7519.      |
 | php-jwt    |A simple library to encode and decode JSON Web Tokens (JWT) in PHP, conforming to RFC 7519.     |
-        	
-- Replace the CybsClient.php with that file from vendor/cybersource/sdk-php/lip folder         	
+
+      	
+- Remove vendor/cybersource/sdk-php/lib/CybsClient.php file and restore it as follows
+~~~~
+  git checkout vendor/cybersource/sdk-php/lib/CybsClient.php  
+~~~~      	
 - Copy the ipaysecure folder to the webserver
 
 ## Environment variables
