@@ -6,15 +6,15 @@ This is the documentation for integrating to the Cybersource 3d security feature
 ## API Deployment
 - Pull code from bitbucket using git clone https://jkikuyu@bitbucket.org/jkikuyu/ipaysecure.git. run composer install to get the following dependancies
 
-| Dependancy |Description 										      | url        |
-|------------|------------------------------------------------------------------------------------------------|------------|
-| cybersource|This is the PHP client for the CyberSource SOAP Toolkit API.  				      |            |
-| phpdotenv  |Loads environment variables from .env   							      |            |
-| JWT	     |A simple library to work with JSON Web Token and JSON Web Signature based on the RFC 7519.      |            | 
-| php-jwt    |A simple library to encode and decode JSON Web Tokens (JWT) in PHP, conforming to RFC 7519.     |            |
+| Dependancy |Description 										      | 
+|------------|------------------------------------------------------------------------------------------------|
+| cybersource|This is the PHP client for the CyberSource SOAP Toolkit API.  				      |            
+| phpdotenv  |Loads environment variables from .env   							      |
+| JWT	     |A simple library to work with JSON Web Token and JSON Web Signature based on the RFC 7519.      |
+| php-jwt    |A simple library to encode and decode JSON Web Tokens (JWT) in PHP, conforming to RFC 7519.     |
         	
-        	
-- Place it in htdocs of your webserver
+- Replace the CybsClient.php with that file from vendor/cybersource/sdk-php/lip folder         	
+- Copy the ipaysecure folder to the webserver
 
 ## Environment variables
 
@@ -87,4 +87,5 @@ $secure3d->processCard();
 
 ## FAQ
 Q1. Errors are displayed when composer install is run
+
 Ensure you have php-curl, php-mbstring and php-soap installed for the version of php you are using
