@@ -13,7 +13,7 @@
 			"Amount":"100",
 			"CurrencyCode":"KES",
 			"OrderChannel":"M",
-			"TransactionId":"'.uniqid().'"
+			"TransactionId":"M123456789"
 		},
 		"Consumer":{
 			"Email1":"abc@review.com",

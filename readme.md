@@ -31,7 +31,10 @@ This is the documentation for integrating to the Cybersource 3d security feature
 | LOGDIR      |Log file location	               				      			      |            
 
 - Change the NVP_WSDL_URL to reflect current endpoint
+
 - Set ORGUNIT_ID, API_ID ,API_KEY to values provided for production
+
+- Specify the location of your log folder will be created and ensure that it has pre-requiste permission.
 
 ## Card Verification and Validation request
 A request with card details is forwarded to the endpoint in this format.
@@ -39,14 +42,14 @@ A request with card details is forwarded to the endpoint in this format.
 	$cardInfo = '{
 	"cardType":"001",
 	"street":"Sifa Towers, Lenana Rd",
-	"referenceID"
+	"referenceID":"987654321",
 	"OrderDetails":{
 		"OrderNumber":"123456789",
 		"OrderDescription":"Phone cover", 
 		"Amount":"1000",
 		"CurrencyCode":"KES",
 		"OrderChannel":"M",
-		"TransactionId":"'.uniqid().'"
+		"TransactionId":"M123456789"
 	},
 	"Consumer":{
 		"Email1":"abc@review.com",
@@ -74,13 +77,12 @@ A request with card details is forwarded to the endpoint in this format.
 ## Usage
 1. Instantiate the Secure3d class and pass your json containing card information as follows. 
 
-2. Call the processCard funciton to begin the 3d authentication process
+2. Call the processCard function to begin the 3d authentication process
 ~~~~ 
 $secure3d = new Secure3d($cardInfo);
 $secure3d->processCard();
 ~~~~ 
 
-
-
-
-
+## FAQ
+Q1. Errors are displayed when composer install is run
+Ensure you have php-curl, php-mbstring and php-soap installed for the version of php you are using
