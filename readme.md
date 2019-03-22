@@ -36,9 +36,10 @@ This is the documentation for integrating to the Cybersource 3d security feature
 ## Card Verification and Validation request
 A request with card details is forwarded to the endpoint in this format.
 ~~~~
-	{
+	$cardInfo = '{
 	"cardType":"001",
 	"street":"Sifa Towers, Lenana Rd",
+	"referenceID"
 	"OrderDetails":{
 		"OrderNumber":"123456789",
 		"OrderDescription":"Phone cover", 
@@ -65,16 +66,19 @@ A request with card details is forwarded to the endpoint in this format.
 		"CardCode":"366",
 		"ExpirationMonth":"12",
 		"ExpirationYear":"2019"
-	}
+	}';
 
 ~~~~ 
-- Card type is either 001 - visa or 002 - mastercard  
-- Currency code is either USD or KES
-- Billing information is required during the validation process
+- Card  information is required during the validation process
 
-## Endpoint
-The endpoint to access shall be (ipaysecure/Secure3d.php)
+## Usage
+1. Instantiate the Secure3d class and pass your json containing card information as follows. 
 
+2. Call the processCard funciton to begin the 3d authentication process
+~~~~ 
+$secure3d = new Secure3d($cardInfo);
+$secure3d->processCard();
+~~~~ 
 
 
 
