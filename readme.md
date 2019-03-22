@@ -4,7 +4,7 @@ iPay -Cybersource 3D Secure
 This is the documentation for integrating to the Cybersource 3d security feature that will enable the cardholder to enter a one time pin(OTP) before completion of the checkout process.
 
 ## API Deployment
-- Get source cond from bitbucket as follows
+- Get source code from bitbucket as follows
 
 ~~~~
  git clone https://bitbucket.org/ipayafrica/ipaysecure. 
