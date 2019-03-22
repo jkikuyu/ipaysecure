@@ -4,7 +4,12 @@ iPay -Cybersource 3D Secure
 This is the documentation for integrating to the Cybersource 3d security feature that will enable the cardholder to enter a one time pin(OTP) before completion of the checkout process.
 
 ## API Deployment
-- Pull code from bitbucket using git clone https://jkikuyu@bitbucket.org/jkikuyu/ipaysecure.git. run composer install to get the following dependancies
+- Get source cond from bitbucket as follows
+
+~~~~
+ git clone https://bitbucket.org/ipayafrica/ipaysecure. 
+~~~~
+- Run composer install to get the following dependancies
 
 | Dependancy |Description 										      | 
 |------------|------------------------------------------------------------------------------------------------|
@@ -29,7 +34,7 @@ This is the documentation for integrating to the Cybersource 3d security feature
 |-------------|-----------------------------------------------------------------------------------------------|
 | MERCHANT_ID |Merchant identifier recognized by cybersource  				      		      |            
 | NVP_WSDL_URL|Cybersource name value pair endpoint (https://ics2wsa.ic3.com/commerce/1.x/transactionProcessor)
-for the latest endpoints		      			                                                              |            
+for the latest endpoints		      			                                                              |
 | ORGUNIT_ID  |Cardinal Cruise Javascript credential for use with songbird.js. This tells the API which processor ID to place the newly registered merchant under.  		         	      |            
 | API_KEY     |Cardinal Cruise Javascript credential for use with songbird.js.The ApiKey will be given by Cardinal. This is how we identify who you are.	      			      |
 | API_ID      |Cardinal Cruise Javascript credential for use with songbird.js. This works in conjunction with the ApiKey to generate the signature.	      			      |            
