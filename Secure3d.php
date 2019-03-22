@@ -25,7 +25,7 @@
 		}
 
 		public function processCard(){
-				echo $this->jsonData;
+				//echo $this->jsonData;
 				$recd_data = json_decode($this->jsonData);
 				//$referenceId = uniqid();
 		/*		$aref = ["referenceId"=>$referenceId];
@@ -46,7 +46,7 @@
 					<script src="https://code.jquery.com/jquery-3.3.0.js"></script>
 					<script>
 						var purchase = <?php echo $this->jsonData; ?>;
-						console.log(purchase);
+						//console.log(purchase);
 						var enrollobj = "";
 						var transactionId = "";
 
@@ -67,20 +67,20 @@
 							body: JSON.stringify(purchase), // body data type must match "Content-Type" header
 						})
 						.then(r =>  r.json())
-						.then(data => 	bin_process(data))
-						.catch(error => console.log(error));
+						.then(data => 	bin_process(data));
+						//.catch(error => console.log(error));
 
 						Cardinal.on('payments.setupComplete', function(setupCompleteData){
-							console.log(JSON.stringify(setupCompleteData));
+							//console.log(JSON.stringify(setupCompleteData));
 
 						});	
 						Cardinal.on("payments.validated", function (vcard, jwt) {
-								console.log("here at payment validated............");
+								//console.log("here at payment validated............");
 						//Listen for Events
 					    switch(vcard.ErrorNumber){
 
 					      case 0:
-					      		console.log ("dataxxxxxxxxxxxxxx :"+JSON.stringify(vcard));
+					      		//console.log ("dataxxxxxxxxxxxxxx :"+JSON.stringify(vcard));
 					      		//console.log(transactionId);
 					      		xid = {"xid":transactionId};
 					      		//console.log(xid);
@@ -89,7 +89,7 @@
 				                              ...xid
 
 				                             };
-								console.log("result:" + JSON.stringify(result));
+								//console.log("result:" + JSON.stringify(result));
 								fetch("CardValidateService.php", {
 									method: "POST", // *GET, POST, PUT, DELETE, etc.
 
@@ -134,13 +134,13 @@
 								} else {
 									// Bin profiling failed
 								}
-								console.log(results.Status);
+							//	console.log(results.Status);
 								card_continue(data);
 							// Bin profiling, if this is the card the end user is paying with you may start the CCA flow at this point
 								//Cardinal.start('cca', myOrderObject);
 							  })
 							  .catch(function(error){
-							  	console.log(error);
+							  	//console.log(error);
 								// An error occurred during profiling
 							  })			
 
@@ -164,7 +164,7 @@
 
 						function initCCA(){
 							// get jwt container
-							console.log(JSON.stringify(document.getElementById("JWTContainer").value));
+							//console.log(JSON.stringify(document.getElementById("JWTContainer").value));
 							Cardinal.setup("init", {
 							    jwt: document.getElementById("JWTContainer").value,
 								order: orderObject

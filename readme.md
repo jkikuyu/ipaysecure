@@ -24,10 +24,11 @@ This is the documentation for integrating to the Cybersource 3d security feature
 | variables   |Description 										      |
 |-------------|-----------------------------------------------------------------------------------------------|
 | MERCHANT_ID |Merchant identifier recognized by cybersource  				      		      |            
-| NVP_WSDL_URL|Cybersource name value pair endpoint (https://ics2wstest.ic3.com/commerce/1.x/transactionProcessor/ for the latest endpoints)		      			                                                              |            
-| ORGUNIT_ID  |Cardinal Cruise Javascript credential for use with songbird.js		         	      |            
-| API_ID      |Cardinal Cruise Javascript credential for use with songbird.js	      			      |            
-| API_KEY     |Cardinal Cruise Javascript credential for use with songbird.js	      			      |            
+| NVP_WSDL_URL|Cybersource name value pair endpoint (https://ics2wsa.ic3.com/commerce/1.x/transactionProcessor)
+for the latest endpoints		      			                                                              |            
+| ORGUNIT_ID  |Cardinal Cruise Javascript credential for use with songbird.js. This tells the API which processor ID to place the newly registered merchant under.  		         	      |            
+| API_KEY     |Cardinal Cruise Javascript credential for use with songbird.js.The ApiKey will be given by Cardinal. This is how we identify who you are.	      			      |
+| API_ID      |Cardinal Cruise Javascript credential for use with songbird.js. This works in conjunction with the ApiKey to generate the signature.	      			      |            
 | LOGDIR      |Log file location	               				      			      |            
 
 - Change the NVP_WSDL_URL to reflect current endpoint
@@ -35,6 +36,7 @@ This is the documentation for integrating to the Cybersource 3d security feature
 - Set ORGUNIT_ID, API_ID ,API_KEY to values provided for production
 
 - Specify the location of your log folder will be created and ensure that it has pre-requiste permission.
+
 
 ## Card Verification and Validation request
 A request with card details is forwarded to the endpoint in this format.
