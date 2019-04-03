@@ -1,15 +1,15 @@
 iPay -Cybersource 3D Secure 
 ====================
 
-This is the documentation for integrating to the Cybersource 3d security feature that will enable the cardholder to enter a one time pin(OTP) before completion of the checkout process.
+This is the documentation for integrating to the Cybersource secure 3d feature that will enable the cardholder to enter a one time pin(OTP) before completion of the checkout process.
 
 ## API Deployment
-- Get source code from bitbucket as follows
+Get source code from bitbucket as follows
 
 ~~~~
  git clone https://bitbucket.org/ipayafrica/ipaysecure. 
 ~~~~
-- Run composer install to get the following dependancies
+Run composer install to get the following dependancies
 
 | Dependancy |Description 										      | 
 |------------|------------------------------------------------------------------------------------------------|
@@ -83,6 +83,26 @@ A request with card details is forwarded to the endpoint in this format.
 	}';
 
 ~~~~ 
+| variables   |Description 										      |
+|-------------|-----------------------------------------------------------------------------------------------|
+| OrderNumber |Merchant identifier recognized by cybersource  				      		      |
+| OrderDescription |Merchant identifier recognized by cybersource  				      		      |            
+| Amount |Merchant identifier recognized by cybersource  				      		      |            
+| CurrencyCode |Merchant identifier recognized by cybersource  				      		      |            
+| TransactionId |Merchant identifier recognized by cybersource  				      		      |            
+| OrderNumber |Merchant identifier recognized by cybersource  				      		      |            
+| OrderNumber |Merchant identifier recognized by cybersource  				      		      |            
+| OrderNumber |Merchant identifier recognized by cybersource  				      		      |            
+| OrderNumber |Merchant identifier recognized by cybersource  				      		      |            
+| OrderNumber |Merchant identifier recognized by cybersource  				      		      |            
+| OrderNumber |Merchant identifier recognized by cybersource  				      		      |            
+| OrderNumber |Merchant identifier recognized by cybersource  				      		      |            
+| OrderNumber |Merchant identifier recognized by cybersource  				      		      |            
+| OrderNumber |Merchant identifier recognized by cybersource  				      		      |            
+            
+
+M – MOTO (Mail Order Telephone Order), R – Retail, S – eCommerce, P – Mobile Device, T – Tablet
+
 - Card  information is required during the validation process
 
 ## Usage

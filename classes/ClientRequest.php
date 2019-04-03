@@ -65,7 +65,7 @@ class ClientRequest{
 		$this->request['billTo_firstName'] = $cardDetails->Consumer->BillingAddress->FirstName;
 		$this->request['billTo_lastName']  = $cardDetails->Consumer->BillingAddress->LastName;
 		$this->request['billTo_email'] = $cardDetails->Consumer->Email1;
-		$this->request['billTo_street1']   = $cardDetails->Consumer->BillingAddress->Address1;
+		//$this->request['billTo_street1']   = $cardDetails->Consumer->BillingAddress->Address1;
 		$this->request['billTo_country'] = $cardDetails->Consumer->BillingAddress->CountryCode;
 
 		$this->request['billTo_city'] 	=  $cardDetails->Consumer->BillingAddress->City;
@@ -89,7 +89,7 @@ class ClientRequest{
 		$this->request['shipTo_firstName'] = $cardDetails->Consumer->BillingAddress->FirstName;
 		$this->request['shipTo_lastName']  = $cardDetails->Consumer->BillingAddress->LastName;
 		$this->request['shipTo_email'] = $cardDetails->Consumer->Email1;
-		$this->request['shipTo_street1']   = $cardDetails->Consumer->BillingAddress->Address1;
+		//$this->request['shipTo_street1']   = $cardDetails->Consumer->BillingAddress->Address1;
 		$this->request['shipTo_country'] = $cardDetails->Consumer->BillingAddress->CountryCode;
 
 		$this->request['shipTo_city'] 	=  $cardDetails->Consumer->BillingAddress->City;

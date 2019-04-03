@@ -80,7 +80,7 @@
 					    switch(vcard.ErrorNumber){
 
 					      case 0:
-					      		//console.log ("dataxxxxxxxxxxxxxx :"+JSON.stringify(vcard));
+					      		console.log ("dataxxxxxxxxxxxxxx :"+JSON.stringify(vcard));
 					      		//console.log(transactionId);
 					      		xid = {"xid":transactionId};
 					      		//console.log(xid);
